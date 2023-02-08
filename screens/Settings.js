@@ -1,11 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Button } from "react-native";
 
-export default function Settings() {
+export default function Settings({ navigation }) {
   return (
     <View style={styles.container}>
       <Text>This is the settings page</Text>
       <StatusBar style="auto" />
+      <Button
+        title="Go to Profile"
+        onPress={() => navigation.navigate("Profile")}
+      />
     </View>
   );
 }

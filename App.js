@@ -2,45 +2,60 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { createStackNavigator } from "@react-navigation/stack";
 import { Feather } from "@expo/vector-icons";
-import Home from "./Home";
-import History from "./History";
-import Schedule from "./Schedule";
-import Settings from "./Settings";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Home from "./screens/Home";
+import History from "./screens/History";
+import Schedule from "./screens/Schedule";
+import Settings from "./screens/Settings";
+import Profile from "./screens/Profile";
 
 const Tab = createBottomTabNavigator();
+const SettingsStack = createStackNavigator();
+
+// allows us to navigate to the profile page from the settings page and vice versa
+function SettingsStackScreen() {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="Settings Page" component={Settings} />
+      <SettingsStack.Screen name="Profile" component={Profile} />
+    </SettingsStack.Navigator>
+  );
+}
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+    <>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
 
-            if (route.name === "Home") {
-              return <Feather name="home" size={size} color={color} />;
-            } else if (route.name === "History") {
-              iconName = focused ? "ios-list" : "ios-list-outline";
-            } else if (route.name === "Schedule") {
-              return <Feather name="calendar" size={size} color={color} />;
-            } else if (route.name === "Settings") {
-              iconName = focused ? "ios-settings" : "ios-settings-outline";
-            }
+              if (route.name === "Home") {
+                return <Feather name="home" size={size} color={color} />;
+              } else if (route.name === "History") {
+                iconName = focused ? "ios-list" : "ios-list-outline";
+              } else if (route.name === "Schedule") {
+                return <Feather name="calendar" size={size} color={color} />;
+              } else if (route.name === "Settings") {
+                iconName = focused ? "ios-settings" : "ios-settings-outline";
+              }
 
-            // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: "#28D8A1",
-          tabBarInactiveTintColor: "gray",
-        })}
-      >
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="History" component={History} />
-        <Tab.Screen name="Schedule" component={Schedule} />
-        <Tab.Screen name="Settings" component={Settings} />
-      </Tab.Navigator>
-    </NavigationContainer>
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: "#28D8A1",
+            tabBarInactiveTintColor: "gray",
+          })}
+        >
+          <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="History" component={History} />
+          <Tab.Screen name="Schedule" component={Schedule} />
+
+          <Tab.Screen name="Settings" component={SettingsStackScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
