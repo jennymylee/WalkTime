@@ -17,7 +17,11 @@ const SettingsStack = createStackNavigator();
 // allows us to navigate to the profile page from the settings page and vice versa
 function SettingsStackScreen() {
   return (
-    <SettingsStack.Navigator>
+    <SettingsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <SettingsStack.Screen name="Settings Page" component={Settings} />
       <SettingsStack.Screen name="Profile" component={Profile} />
     </SettingsStack.Navigator>
@@ -30,6 +34,7 @@ export default function App() {
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
+            headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
 
