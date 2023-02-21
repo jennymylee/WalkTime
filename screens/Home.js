@@ -1,11 +1,12 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
   return (
     <View style={styles.container}>
-      <Text>This is the home page</Text>
-      <StatusBar style="auto" />
+      <Text style={styles.walkText}>
+        Walk
+        <Text style={styles.timeText}>Time</Text>
+      </Text>
     </View>
   );
 }
@@ -13,8 +14,19 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingTop: 50,
+    paddingLeft: 30,
+    paddingRight: 30,
+  },
+  walkText: {
+    fontWeight: "bold",
+    fontSize: 38,
+    marginBottom: 15,
+  },
+  timeText: {
+    color: "#28D8A1",
   },
 });
