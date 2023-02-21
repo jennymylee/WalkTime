@@ -7,13 +7,12 @@ import * as firebase from "firebase";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBfM3zwQ8iC5jRtCVzc9kgCakiT5TLBNW0",
-  authDomain: "walktime-ca93a.firebaseapp.com",
-  projectId: "walktime-ca93a",
-  storageBucket: "walktime-ca93a.appspot.com",
-  messagingSenderId: "285601556054",
-  appId: "1:285601556054:web:85b3c10f06c06697a4bdf7",
-  measurementId: "G-87KZVVWNLK",
+  apiKey: "AIzaSyBs5wD5Ra6OQQz3WUm8ST9GQ6O0tdgZIj4",
+  authDomain: "walktime-125.firebaseapp.com",
+  projectId: "walktime-125",
+  storageBucket: "walktime-125.appspot.com",
+  messagingSenderId: "27807163134",
+  appId: "1:27807163134:web:192696828b558d4f053baf"
 };
 
 // Initialize Firebase
