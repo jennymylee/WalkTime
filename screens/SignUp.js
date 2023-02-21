@@ -1,16 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
 
-export default function Settings({ navigation }) {
+export default function SignUp({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text>This is the settings page</Text>
+      <Text>This is the sign up page</Text>
       <StatusBar style="auto" />
       <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate("Profile")}
+        title="Go to Log In page"
+        onPress={() => navigation.navigate("Log In")}
       />
-      <Button title="Log Out" onPress={() => navigation.navigate("Log In")} />
+      <Button
+        title="Go to Tabs page"
+        onPress={() => navigation.navigate("Tabs")}
+      />
     </View>
   );
 }

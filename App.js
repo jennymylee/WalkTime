@@ -10,9 +10,27 @@ import History from "./screens/History";
 import Schedule from "./screens/Schedule";
 import Settings from "./screens/Settings";
 import Profile from "./screens/Profile";
+import LogIn from "./screens/LogIn";
+import SignUp from "./screens/SignUp";
 
 const Tab = createBottomTabNavigator();
 const SettingsStack = createStackNavigator();
+const AuthStack = createStackNavigator();
+
+// allows us to navigate between sign up and log in screens and to the home page
+function AuthStackScreen() {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <AuthStack.Screen name="Log In" component={LogIn} />
+      <AuthStack.Screen name="Sign Up" component={SignUp} />
+      <AuthStack.Screen name="Tabs" component={TabsInterface} />
+    </AuthStack.Navigator>
+  );
+}
 
 // allows us to navigate to the profile page from the settings page and vice versa
 function SettingsStackScreen() {
@@ -28,38 +46,53 @@ function SettingsStackScreen() {
   );
 }
 
+function TabsInterface() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarShowLabel: false,
+
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === "Home") {
+            return <Feather name="home" size={size} color={color} />;
+          } else if (route.name === "History") {
+            iconName = focused ? "ios-list" : "ios-list-outline";
+          } else if (route.name === "Schedule") {
+            return <Feather name="calendar" size={size} color={color} />;
+          } else if (route.name === "Settings") {
+            iconName = focused ? "ios-settings" : "ios-settings-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: "#28D8A1",
+        tabBarInactiveTintColor: "gray",
+      })}
+    >
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="History" component={History} />
+      <Tab.Screen name="Schedule" component={Schedule} />
+
+      <Tab.Screen name="Settings" component={SettingsStackScreen} />
+    </Tab.Navigator>
+  );
+}
+
 export default function App() {
   return (
     <>
       <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
+        <AuthStack.Navigator
+          screenOptions={{
             headerShown: false,
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-
-              if (route.name === "Home") {
-                return <Feather name="home" size={size} color={color} />;
-              } else if (route.name === "History") {
-                iconName = focused ? "ios-list" : "ios-list-outline";
-              } else if (route.name === "Schedule") {
-                return <Feather name="calendar" size={size} color={color} />;
-              } else if (route.name === "Settings") {
-                iconName = focused ? "ios-settings" : "ios-settings-outline";
-              }
-
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: "#28D8A1",
-            tabBarInactiveTintColor: "gray",
-          })}
+          }}
         >
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="History" component={History} />
-          <Tab.Screen name="Schedule" component={Schedule} />
-
-          <Tab.Screen name="Settings" component={SettingsStackScreen} />
-        </Tab.Navigator>
+          <AuthStack.Screen name="Log In" component={LogIn} />
+          <AuthStack.Screen name="Sign Up" component={SignUp} />
+          <AuthStack.Screen name="Tabs" component={TabsInterface} />
+        </AuthStack.Navigator>
       </NavigationContainer>
     </>
   );
