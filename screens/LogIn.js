@@ -6,10 +6,31 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { auth } from "../firebase";
 
 export default function LogIn({ navigation }) {
-  const [username, setUserName] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+  React.useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigation.replace("Tabs");
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const handleLogIn = () => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("logged in with:", user.email);
+      })
+      .catch((error) => alert(error.message));
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
@@ -19,20 +40,22 @@ export default function LogIn({ navigation }) {
       <View>
         <TextInput
           style={styles.input}
-          onChangeText={setUserName}
-          value={username}
-          placeholder="username"
+          onChangeText={setEmail}
+          value={email}
+          placeholder="email"
         />
         <TextInput
           style={styles.input}
           onChangeText={setPassword}
           value={password}
           placeholder="password"
+          secureTextEntry
         />
       </View>
       <TouchableOpacity
         style={styles.logInButton}
-        onPress={() => navigation.navigate("Tabs")}
+        // onPress={() => navigation.navigate("Tabs")}
+        onPress={handleLogIn}
       >
         <Text style={styles.logInText}>LOG IN</Text>
       </TouchableOpacity>
