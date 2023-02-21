@@ -1,38 +1,36 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   TextInput,
 } from "react-native";
 
 export default function LogIn({ navigation }) {
-  const [username, onChangeUserName] = React.useState("");
-  const [password, onChangePassword] = React.useState("");
+  const [username, setUserName] = React.useState("");
+  const [password, setPassword] = React.useState("");
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
         Walk
         <Text style={styles.timeText}>Time</Text>
       </Text>
-      <SafeAreaView>
+      <View>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeUserName}
+          onChangeText={setUserName}
           value={username}
           placeholder="username"
         />
         <TextInput
           style={styles.input}
-          onChangeText={onChangePassword}
+          onChangeText={setPassword}
           value={password}
           placeholder="password"
         />
-      </SafeAreaView>
+      </View>
       <TouchableOpacity
         style={styles.logInButton}
         onPress={() => navigation.navigate("Tabs")}
