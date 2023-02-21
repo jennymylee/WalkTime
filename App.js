@@ -1,5 +1,3 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -16,21 +14,6 @@ import SignUp from "./screens/SignUp";
 const Tab = createBottomTabNavigator();
 const SettingsStack = createStackNavigator();
 const AuthStack = createStackNavigator();
-
-// allows us to navigate between sign up and log in screens and to the home page
-function AuthStackScreen() {
-  return (
-    <AuthStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <AuthStack.Screen name="Log In" component={LogIn} />
-      <AuthStack.Screen name="Sign Up" component={SignUp} />
-      <AuthStack.Screen name="Tabs" component={TabsInterface} />
-    </AuthStack.Navigator>
-  );
-}
 
 // allows us to navigate to the profile page from the settings page and vice versa
 function SettingsStackScreen() {
@@ -84,6 +67,7 @@ export default function App() {
   return (
     <>
       <NavigationContainer>
+        {/* allows us to navigate between sign up and log in screens and to the home page */}
         <AuthStack.Navigator
           screenOptions={{
             headerShown: false,
