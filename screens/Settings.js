@@ -1,7 +1,17 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button } from "react-native";
+import { auth } from "../firebase";
 
 export default function Settings({ navigation }) {
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.replace("Log In");
+      })
+      .catch((error) => alert(error.message));
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
@@ -12,7 +22,7 @@ export default function Settings({ navigation }) {
         title="Go to Profile"
         onPress={() => navigation.navigate("Profile")}
       />
-      <Button title="Log Out" onPress={() => navigation.navigate("Log In")} />
+      <Button title="Log Out" onPress={handleSignOut} />
     </View>
   );
 }

@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, Button } from "react-native";
+import { auth } from "../firebase";
 
 export default function Profile({ navigation }) {
   return (
@@ -7,6 +8,7 @@ export default function Profile({ navigation }) {
         Walk
         <Text style={styles.profileText}>Profile</Text>
       </Text>
+      <Text>Email: {auth.currentUser?.email}</Text>
     </View>
   );
 }

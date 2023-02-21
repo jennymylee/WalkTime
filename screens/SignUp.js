@@ -7,12 +7,24 @@ import {
   TextInput,
   Button,
 } from "react-native";
+import { auth } from "../firebase";
 
 export default function SignUp({ navigation }) {
-  const [username, setUserName] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
   const [age, setAge] = React.useState(0);
+
+  const handleSignUp = () => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("registered with:", user.email);
+      })
+      .catch((error) => alert(error.message));
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
@@ -23,15 +35,16 @@ export default function SignUp({ navigation }) {
       <View>
         <TextInput
           style={styles.input}
-          onChangeText={setUserName}
-          value={username}
-          placeholder="username"
+          onChangeText={setEmail}
+          value={email}
+          placeholder="email"
         />
         <TextInput
           style={styles.input}
           onChangeText={setPassword}
           value={password}
           placeholder="password"
+          secureTextEntry
         />
         <TextInput
           style={styles.input}
@@ -49,7 +62,8 @@ export default function SignUp({ navigation }) {
       </View>
       <TouchableOpacity
         style={styles.signUpButton}
-        onPress={() => navigation.navigate("Tabs")}
+        // onPress={() => navigation.navigate("Tabs")}
+        onPress={handleSignUp}
       >
         <Text style={styles.signUpText}>SIGN UP</Text>
       </TouchableOpacity>
