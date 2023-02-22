@@ -72,6 +72,7 @@ export default function Schedule() {
         <Text style={styles.scheduleText}>Schedule</Text>
       </Text>
       <Text style={styles.subHeading}>Mark your availability.</Text>
+      {/* row of days */}
       <View style={styles.days}>
         <TouchableOpacity
           style={currentDay == "Sunday" ? styles.currentDay : styles.day}
@@ -116,9 +117,12 @@ export default function Schedule() {
           <Text style={styles.dayText}>Sat</Text>
         </TouchableOpacity>
       </View>
+      {/* schedule on a day */}
       <View style={styles.schedule}>
         <Text style={styles.currentDayText}>{currentDay}</Text>
+        {/* schedule entries */}
         {displayScheduleEntries()}
+        {/* edit/save button */}
         <View style={styles.buttonView}>
           <TouchableOpacity
             onPress={() => {
