@@ -8,48 +8,105 @@ export default function Schedule() {
   const [editMode, setEditMode] = React.useState(false);
 
   // dummy schedule: {day : [ [startTime, endTime] ]}
-  // const schedule = {
-  //   Sunday: [
-  //     { startTime: new Date().setHours(8), endTime: new Date().setHours(9) },
-  //   ],
-  // };
+
   const schedule = {
     Sunday: [
-      { startTime: "8:00 AM", endTime: "8:30 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Monday: [
-      { startTime: "8:00 AM", endTime: "8:30 AM" },
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Tuesday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Wednesday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Thursday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
-      { startTime: "9:00 PM", endTime: "10:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Friday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
     Saturday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
-      { startTime: "3:00 PM", endTime: "5:00 PM" },
-      { startTime: "7:00 PM", endTime: "8:00 PM" },
+      {
+        startTime: new Date("2019-01-01T00:00:00"),
+        endTime: new Date("2019-01-01T01:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T02:00:00"),
+        endTime: new Date("2019-01-01T03:00:00"),
+      },
+      {
+        startTime: new Date("2019-01-01T10:00:00"),
+        endTime: new Date("2019-01-01T21:00:00"),
+      },
     ],
   };
 

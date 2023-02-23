@@ -5,8 +5,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ScheduleEntry = ({ startTime, endTime, editMode, setEditMode }) => {
   // TODO: convert startTime and endTime to be date strings
-  const [sTime, setSTime] = React.useState(new Date());
-  const [eTime, setETime] = React.useState(new Date());
+  const [sTime, setSTime] = React.useState(new Date(startTime));
+  const [eTime, setETime] = React.useState(new Date(endTime));
 
   function onStartTimeSelected(event, value) {
     setSTime(value);
