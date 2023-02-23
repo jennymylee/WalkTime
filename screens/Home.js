@@ -5,36 +5,24 @@ import { Pedometer } from "expo-sensors";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
-  const [ PedometerAvailable, setPedometerAvailable ] = useState(""); // starts empty
-  const [ stepCount, setStepCount ] = useState(0); // starts at 0 steps
-  
-  useEffect(()=>{
-    subscribe(); // calls the subscribe function when app starts
-  }, [])
+  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [currentStepCount, setCurrentStepCount] = useState(0);
 
-  const subscribe = () => {
-    
-    Pedometer.watchStepCount((result)=>{
-      setStepCount(result.steps);
-    })
+  const subscribe = async () => {
+    const isAvailable = await Pedometer.isAvailableAsync();
+    setIsPedometerAvailable(String(isAvailable));
 
-    Pedometer.isAvailableAsync().then(
-      (result) => {
-        setPedometerAvailable(String(result)); // result = 1|0. String(result) = true|false.
-      },
-      (error) => {
-        setPedometerAvailable(error);
-      }
-    )
+    if (isAvailable) {
+      return Pedometer.watchStepCount(result => {
+        setCurrentStepCount(result.steps);
+      });
+    }
+  };
 
-    // Need to set pedometer permissions
-    /*
-    getAndroidManifestAsync((result) =>{
-      Permissions.addBlockedPermissions(result, ["android.permission.ACTIVITY_RECOGNITION"]);
-    });
-    */
-    
-  }
+  useEffect(() => {
+    const subscription = subscribe();
+    return () => subscription;
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -42,8 +30,8 @@ export default function Home() {
         Walk
         <Text style={styles.timeText}>Time</Text>
       </Text>
-      <Text>Is pedometer available on device?: {PedometerAvailable}</Text>
-      <Text>Steps: {stepCount}</Text>
+      <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
+      <Text>Walk! And watch this go up: {currentStepCount}</Text>
     </View>
   );
 }
