@@ -1,18 +1,53 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ScheduleEntry = ({ startTime, endTime, editMode, setEditMode }) => {
+  // TODO: convert startTime and endTime to be date strings
+  const [sTime, setSTime] = React.useState(new Date());
+  const [eTime, setETime] = React.useState(new Date());
+
+  function onStartTimeSelected(event, value) {
+    setSTime(value);
+  }
+
+  function onEndTimeSelected(event, value) {
+    setETime(value);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>From</Text>
-      <View style={editMode ? styles.timeBoxEditMode : styles.timeBox}>
-        <Text style={styles.text}>{startTime}</Text>
-      </View>
+      {editMode ? (
+        <DateTimePicker
+          mode="time"
+          value={sTime}
+          style={styles.timeBoxEditMode}
+          onChange={onStartTimeSelected}
+        />
+      ) : (
+        <View style={editMode ? styles.timeBoxEditMode : styles.timeBox}>
+          <Text style={styles.text}>
+            {sTime.toLocaleTimeString([], { timeStyle: "short" })}
+          </Text>
+        </View>
+      )}
       <Text style={styles.text}>To</Text>
-      <View style={editMode ? styles.timeBoxEditMode : styles.timeBox}>
-        <Text style={styles.text}>{endTime}</Text>
-      </View>
+      {editMode ? (
+        <DateTimePicker
+          mode="time"
+          value={eTime}
+          style={styles.timeBoxEditMode}
+          onChange={onEndTimeSelected}
+        />
+      ) : (
+        <View style={editMode ? styles.timeBoxEditMode : styles.timeBox}>
+          <Text style={styles.text}>
+            {eTime.toLocaleTimeString([], { timeStyle: "short" })}
+          </Text>
+        </View>
+      )}
       {editMode ? (
         // TODO: onPress removes this schedule entry
         <TouchableOpacity onPress={() => {}}>
@@ -41,8 +76,6 @@ const styles = StyleSheet.create({
   timeBoxEditMode: {
     width: 90,
     height: 40,
-    borderRadius: 15,
-    backgroundColor: "#DFDFDF",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

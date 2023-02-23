@@ -8,9 +8,14 @@ export default function Schedule() {
   const [editMode, setEditMode] = React.useState(false);
 
   // dummy schedule: {day : [ [startTime, endTime] ]}
+  // const schedule = {
+  //   Sunday: [
+  //     { startTime: new Date().setHours(8), endTime: new Date().setHours(9) },
+  //   ],
+  // };
   const schedule = {
     Sunday: [
-      { startTime: "10:00 AM", endTime: "11:00 AM" },
+      { startTime: "8:00 AM", endTime: "8:30 AM" },
       { startTime: "3:00 PM", endTime: "5:00 PM" },
       { startTime: "7:00 PM", endTime: "8:00 PM" },
     ],
@@ -54,8 +59,8 @@ export default function Schedule() {
         {schedule[currentDay].map((e) => {
           return (
             <ScheduleEntry
-              startTime={e.startTime}
-              endTime={e.endTime}
+              startTime={e.startTime.toString()}
+              endTime={e.endTime.toString()}
               editMode={editMode}
               setEditMode={setEditMode}
             />
