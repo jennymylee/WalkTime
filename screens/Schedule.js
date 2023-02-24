@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 30,
     height: "100%",
-    borderRadius: "30",
+    borderRadius: 30,
   },
   currentDayText: {
     fontSize: 25,
