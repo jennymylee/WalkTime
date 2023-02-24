@@ -30,7 +30,7 @@ export default function Home() {
         Walk
         <Text style={styles.timeText}>Time</Text>
       </Text>
-      <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
+      <Text>Is pedometer available?: {isPedometerAvailable}</Text>
       <Text>Walk! And watch this go up: {currentStepCount}</Text>
     </View>
   );
