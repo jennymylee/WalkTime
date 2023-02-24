@@ -5,8 +5,8 @@ import { Pedometer } from "expo-sensors";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
-  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-  const [currentStepCount, setCurrentStepCount] = useState(0);
+  var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  var [currentStepCount, setCurrentStepCount] = useState(0);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
