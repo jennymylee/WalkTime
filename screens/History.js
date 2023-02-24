@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 import HistoryEntry from "../components/HistoryEntry";
 
 export default function History() {
-  // dummy history log: {date str: {time str: [distance in miles, time elapsed in seconds]}}
+  // dummy history log
   const history = [
     {
       date: "Monday, 1/30/2023",
