@@ -1,65 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import GoogleFit, { Scopes } from 'react-native-google-fit';
-//import { Pedometer } from "expo-sensors";
+import { Pedometer } from "expo-sensors";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
-  var [dailySteps, setDailySteps] = useState(0);
-  const options = {
-    scopes: [
-      Scopes.FITNESS_ACTIVITY_READ,
-      Scopes.FITNESS_ACTIVITY_WRITE,
-    ],
+  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [currentStepCount, setCurrentStepCount] = useState(0);
+
+  const subscribe = async () => {
+    const isAvailable = await Pedometer.isAvailableAsync();
+    setIsPedometerAvailable(String(isAvailable));
+
+    if (isAvailable) {
+      return Pedometer.watchStepCount(result => {
+        setCurrentStepCount(result.steps);
+      });
+    }
   };
 
-  let getStepData = async () => {  
-    GoogleFit.checkIsAuthorized().then(() => {
-      var authorized = GoogleFit?.isAuthorized;
-      if(authorized){
-        var today = new Date();
-        var yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate()-1);
-        
-        const opt = {
-          startDate: yesterday.toISOString(),
-          endDate: today.toISOString(),
-          bucketUnit: 'DAY',
-          bucketInterval: 1,
-        };
-
-        let fetchStepsData = async opt => {
-          const res = await GoogleFit.getDailyStepCountSamples(opt);
-          if(res.length != 0){
-            for(var i=0; i < res.length; i++){
-              if(res[i].source == 'com.google.android.gms:estimated_steps'){
-                let data = res[i].steps.reverse();
-                dailyStepCount = res[i].steps;
-                setDailySteps(data[0].value);
-              }
-            }
-          }
-          else{
-            console.log('Data not found.');
-          }
-        };
-
-      } 
-      else{
-        GoogleFit.authorize(options).then(authResult => {
-          if(authResult.success){
-            console.log('AUTH_SUCCESS');
-          }
-          else{
-            console.log('AUTH_DENIED ' + authResult.message);
-          }
-        }).catch(()=>{dispatch('AUTH_ERROR');});
-      }
-    })
-  }
-
   useEffect(() => {
-    getStepData();
+    const subscription = subscribe();
+    return () => subscription;
   }, []);
 
   return (
@@ -68,7 +30,8 @@ export default function Home() {
         Walk
         <Text style={styles.timeText}>Time</Text>
       </Text>
-      <Text>Walk! And watch this go up: {dailySteps}</Text>
+      <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
+      <Text>Walk! And watch this go up: {currentStepCount}</Text>
     </View>
   );
 }
