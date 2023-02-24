@@ -58,6 +58,7 @@ export default function SignUp({ navigation }) {
           value={age}
           placeholder="age"
           keyboardType="numeric"
+          returnKeyType="done"
         />
       </View>
       <TouchableOpacity
