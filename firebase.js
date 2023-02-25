@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs you need
 import * as firebase from "firebase";
-import { getDatabase, ref, set } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -13,8 +12,7 @@ const firebaseConfig = {
   projectId: "walktime-125",
   storageBucket: "walktime-125.appspot.com",
   messagingSenderId: "27807163134",
-  appId: "1:27807163134:web:192696828b558d4f053baf",
-  databaseURL: "https://walktime-125.us-east1.firebasedatabase.app"
+  appId: "1:27807163134:web:192696828b558d4f053baf"
 };
 
 // Initialize Firebase
@@ -26,35 +24,5 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth();
-const db = firebase.getDatabase(app);
-// const dbRef = firebase.database().ref();
-const historyRef = ref(db, "history");
-const scheduleRef = ref(db, "schedule");
 
-
-function addNewHistory(userId, startTime, endTime, date){
-  set(historyRef, {
-    userId: userId,
-    startTime: startTime,
-    endTime: endTime,
-    date: date
-  })
-}
-
-function readHistoryDB(user) {
-
-}
-
-function addNewSchedule(userId, startTime, endTime, dayOfWeek){
-  set(scheduleRef, {
-    userId: userId,
-    startTime: startTime,
-    endTime: endTime,
-    dayOfWeek: dayOfWeek
-  })
-}
-
-function readScheduleDB(user) {
-
-}
-export { auth, database };
+export { auth };

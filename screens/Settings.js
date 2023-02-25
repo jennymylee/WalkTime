@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { auth } from "../firebase";
 
 export default function Settings({ navigation }) {
@@ -18,11 +18,20 @@ export default function Settings({ navigation }) {
         Walk
         <Text style={styles.settingsText}>Settings</Text>
       </Text>
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate("Profile")}
-      />
-      <Button title="Log Out" onPress={handleSignOut} />
+      <View style={styles.centerContainer}>
+        <Pressable
+            style={styles.button}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <Text style={styles.buttonText}>Go to Profile</Text>
+          </Pressable>
+          <Pressable
+            style={styles.button}
+            onPress={handleSignOut}
+          >
+            <Text style={styles.buttonText}>Log Out</Text>
+          </Pressable>
+      </View>
     </View>
   );
 }
@@ -44,5 +53,23 @@ const styles = StyleSheet.create({
   },
   settingsText: {
     color: "#28D8A1",
+  },
+  centerContainer:{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  buttonText: {
+    fontSize: 25,
+  },
+  button: {
+    backgroundColor: "#28D8A1",
+    padding: 10,
+    margin: 10,
+    width: "75%",
+    borderRadius: 15, 
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
   },
 });
