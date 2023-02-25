@@ -24,5 +24,35 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth();
+const db = getDatabase(app);
+// const dbRef = firebase.database().ref();
+const historyRef = ref(db, "history");
+const scheduleRef = ref(db, "schedule");
 
-export { auth };
+
+export function addNewHistory(userId, startTime, endTime, date){
+  set(historyRef, {
+    userId: userId,
+    startTime: startTime,
+    endTime: endTime,
+    date: date
+  })
+}
+
+export function readHistory(userId) {
+
+}
+
+export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
+  set(scheduleRef, {
+    userId: userId,
+    startTime: startTime,
+    endTime: endTime,
+    dayOfWeek: dayOfWeek
+  })
+}
+
+export function readSchedule(userId) {
+
+}
+export { auth, addNewHistory, readHistory, addNewSchedule, readSchedule };

@@ -1,9 +1,10 @@
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
-import { database } from "../firebase";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
@@ -250,8 +251,10 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#28D8A1",
+    backgroundColor: "#fff",
     paddingTop: 50,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   walkText: {
     fontWeight: "bold",
