@@ -29,7 +29,7 @@
         "googleMaps":{
           "apiKey": "AIzaSyDN-4mtUxeC2SOnooTTSjmQsy3uf-J0fOM"
         }
-      },
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
