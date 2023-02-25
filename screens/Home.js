@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { Pedometer } from "expo-sensors";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
@@ -7,6 +7,7 @@ import { Pedometer } from "expo-sensors";
 export default function Home() {
   var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
   var [currentStepCount, setCurrentStepCount] = useState(0);
+  var [isWalking, setWalking] = useState(false);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
@@ -24,16 +25,51 @@ export default function Home() {
     return () => subscription;
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.walkText}>
-        Walk
-        <Text style={styles.timeText}>Time</Text>
-      </Text>
-      <Text>Is pedometer available?: {isPedometerAvailable}</Text>
-      <Text>Walk! And watch this go up: {currentStepCount}</Text>
-    </View>
-  );
+  let toggleWalk = () => {
+    setWalking(!isWalking);
+  };
+
+  if(isWalking){
+    return (
+      <View style={styles.container}>
+        <Text style={styles.walkText}>
+          Walk
+          <Text style={styles.timeText}>Time</Text>
+        </Text>
+        <View style={styles.body}>
+          <Text style={styles.bodyText}>On a walk!</Text>
+          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <Pressable
+            style={styles.walkButton}
+            onPress={toggleWalk}
+          >
+            <Text style={styles.buttonText}>Stop Walk</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+  else{
+    return (
+      <View style={styles.container}>
+        <Text style={styles.walkText}>
+          Walk
+          <Text style={styles.timeText}>Time</Text>
+        </Text>
+        <View style={styles.body}>
+          <Text style={styles.bodyText}>Great job on your 11:00am walk!</Text>
+          <Text style={styles.bodyText}>Your next walk is at 1:15pm.</Text>
+          <Pressable
+            style={styles.walkButton}
+            onPress={toggleWalk}
+          >
+            <Text style={styles.buttonText}>Start Walk</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+  
 }
 
 const styles = StyleSheet.create({
@@ -54,4 +90,24 @@ const styles = StyleSheet.create({
   timeText: {
     color: "#28D8A1",
   },
+  body: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  bodyText: {
+    fontSize: 18,
+  },
+  buttonText: {
+    fontSize: 25,
+  },
+  walkButton: {
+    backgroundColor: "#28D8A1",
+    padding: 10,
+    width: "75%",
+    borderRadius: 15, 
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
+  }
 });
