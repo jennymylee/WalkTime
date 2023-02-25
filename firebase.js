@@ -26,13 +26,13 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth();
-const db = firebase.getDatabase(app);
+const db = getDatabase(app);
 // const dbRef = firebase.database().ref();
 const historyRef = ref(db, "history");
 const scheduleRef = ref(db, "schedule");
 
 
-function addNewHistory(userId, startTime, endTime, date){
+export function addNewHistory(userId, startTime, endTime, date){
   set(historyRef, {
     userId: userId,
     startTime: startTime,
@@ -41,11 +41,11 @@ function addNewHistory(userId, startTime, endTime, date){
   })
 }
 
-function readHistoryDB(user) {
+export function readHistory(userId) {
 
 }
 
-function addNewSchedule(userId, startTime, endTime, dayOfWeek){
+export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
   set(scheduleRef, {
     userId: userId,
     startTime: startTime,
@@ -54,7 +54,7 @@ function addNewSchedule(userId, startTime, endTime, dayOfWeek){
   })
 }
 
-function readScheduleDB(user) {
+export function readSchedule(userId) {
 
 }
-export { auth, database };
+export { auth, addNewHistory, readHistory, addNewSchedule, readSchedule };
