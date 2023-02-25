@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import React from "react";
 import ScheduleEntry from "../components/ScheduleEntry";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
@@ -127,6 +128,40 @@ export default function Schedule() {
     );
   }
 
+  async function schedulePushNotification(
+    time,
+    day
+  ) {
+    time = new Date(time.getTime() - 5 * 60000);
+    var days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const weekday = days.indexOf(day) + 1;
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Time for a walk!",
+        body: "Let's recharge with some exercise!",
+        // sound: 'default',
+      },
+      trigger: {
+        weekday: weekday,
+        hour: hours,
+        minute: minutes,
+        repeats: true,
+      },
+    });
+    console.log("notif id on scheduling",id)
+    return id;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
@@ -189,6 +224,7 @@ export default function Schedule() {
           <TouchableOpacity
             onPress={() => {
               setEditMode(!editMode);
+              //schedulePushNotification("Friday");
             }}
             style={editMode ? styles.saveButton : styles.editButton}
           >
