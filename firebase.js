@@ -57,4 +57,4 @@ export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
 export function readSchedule(userId) {
 
 }
-export { auth, addNewHistory, readHistory, addNewSchedule, readSchedule };
+export { auth };
