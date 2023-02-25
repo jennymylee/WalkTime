@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Pedometer } from "expo-sensors";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
@@ -39,6 +40,16 @@ export default function Home() {
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
           <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <MapView 
+            style={styles.map}
+            provider={PROVIDER_GOOGLE} 
+            initialRegion={{
+              latitude: 33.645463,
+              longitude: -117.842087,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
           <Pressable
             style={styles.walkButton}
             onPress={toggleWalk}
@@ -97,6 +108,7 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: 18,
+    marginBottom: 5,
   },
   buttonText: {
     fontSize: 25,
@@ -104,10 +116,15 @@ const styles = StyleSheet.create({
   walkButton: {
     backgroundColor: "#28D8A1",
     padding: 10,
+    margin: 10,
     width: "75%",
     borderRadius: 15, 
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
+  },
+  map: {
+    width: "100%",
+    height: "60%",
   }
 });
