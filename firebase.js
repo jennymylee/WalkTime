@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import * as firebase from "firebase";
-import { getDatabase, ref, set } from "firebase/database";
+// import { getDatabase, ref, set } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,14 +26,23 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth();
-const db = getDatabase(app);
+const database = firebase.database();
+// const db = getDatabase();
 // const dbRef = firebase.database().ref();
-const historyRef = ref(db, "history");
-const scheduleRef = ref(db, "schedule");
+// const historyRef = ref(db, "history");
+// const scheduleRef = ref(db, "schedule");
 
+
+// function writeUserData(userId, name, email, imageUrl) {
+//   firebase.database().ref('users/' + userId).set({
+//     username: name,
+//     email: email,
+//     profile_picture : imageUrl
+//   });
+// }
 
 export function addNewHistory(userId, startTime, endTime, date){
-  set(historyRef, {
+  database.ref('history/').set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
@@ -42,11 +51,26 @@ export function addNewHistory(userId, startTime, endTime, date){
 }
 
 export function readHistory(userId) {
+  const historyMap = []
+  var historyRef = database.collection("history")
+  var query = historyRef.where("userId", "==", userId)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          // console.log(doc.id, " => ", doc.data());
+          historyMap.push(doc.data());
+      });
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
+  return historyMap;
 
 }
 
 export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
-  set(scheduleRef, {
+  database.ref('schedule/').set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
@@ -55,6 +79,21 @@ export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
 }
 
 export function readSchedule(userId) {
+  const scheduleMap = []
+  var historyRef = database.collection("schedule")
+  var query = historyRef.where("userId", "==", userId)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          // console.log(doc.id, " => ", doc.data());
+          scheduleMap.push(doc.data());
+      });
+  })
+  .catch((error) => {
+      console.log("Error getting documents: ", error);
+  });
+  return scheduleMap;
 
 }
 export { auth };
