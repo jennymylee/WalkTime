@@ -34,7 +34,7 @@ export async function getSchedule(userId) {
   return schedule;
 }
 
-export function saveNewScheduleToDB(userId, schedule, currentDay) {
+export function saveNewScheduleToDB(userId, currentDayTimes, currentDay) {
   // possible solution: remove all user's schedule rows on currentDay
   // and add new rows
 
@@ -54,7 +54,7 @@ export function saveNewScheduleToDB(userId, schedule, currentDay) {
   //   console.log(schedule[currentDay]);
 
   let batch = db.batch();
-  for (let timeBlock of schedule[currentDay]) {
+  for (let timeBlock of currentDayTimes) {
     // Create a ref with auto-generated ID
     var newScheduleRef = db.collection("schedule").doc();
     batch.set(newScheduleRef, {

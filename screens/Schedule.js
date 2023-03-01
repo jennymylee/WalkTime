@@ -47,7 +47,11 @@ export default function Schedule() {
 
   // save new edits to schedule on db
   function saveNewSchedule() {
-    saveNewScheduleToDB(auth.currentUser?.uid, schedule, currentDay);
+    saveNewScheduleToDB(
+      auth.currentUser?.uid,
+      schedule[currentDay],
+      currentDay
+    );
     return;
   }
 
@@ -165,7 +169,10 @@ export default function Schedule() {
           <TouchableOpacity
             onPress={() => {
               setEditMode(!editMode);
-              saveNewSchedule();
+              if (editMode) {
+                saveNewSchedule();
+              }
+
               //schedulePushNotification("Friday");
             }}
             style={editMode ? styles.saveButton : styles.editButton}
