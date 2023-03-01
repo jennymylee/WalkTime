@@ -11,7 +11,6 @@ export default function Schedule() {
   const [editMode, setEditMode] = React.useState(false);
   const [schedule, setSchedule] = React.useState({});
 
-  // dummy schedule: {day : [ [startTime, endTime] ]}
   React.useEffect(() => {
     const getUserSchedule = async () => {
       const sched = await getSchedule(auth.currentUser?.uid);
