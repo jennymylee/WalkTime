@@ -3,13 +3,14 @@ import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
-import { getSchedule } from "../models/schedule";
+import { getSchedule, saveNewScheduleToDB } from "../models/schedule";
 import { auth } from "../firebase";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
   const [editMode, setEditMode] = React.useState(false);
   const [schedule, setSchedule] = React.useState({});
+  const [scheduleChanged, setScheduleChanged] = React.useState(false);
 
   React.useEffect(() => {
     const getUserSchedule = async () => {
@@ -18,6 +19,10 @@ export default function Schedule() {
     };
     getUserSchedule();
   }, []);
+
+  React.useEffect(() => {
+    displayScheduleEntries();
+  }, [scheduleChanged]);
 
   function displayScheduleEntries() {
     return (
@@ -38,6 +43,12 @@ export default function Schedule() {
         )}
       </View>
     );
+  }
+
+  // save new edits to schedule on db
+  function saveNewSchedule() {
+    saveNewScheduleToDB(auth.currentUser?.uid, schedule, currentDay);
+    return;
   }
 
   async function schedulePushNotification(time, day) {
@@ -128,11 +139,33 @@ export default function Schedule() {
         <Text style={styles.currentDayText}>{currentDay}</Text>
         {/* schedule entries */}
         {displayScheduleEntries()}
+        {/* "add another time" text */}
+        {editMode ? (
+          <TouchableOpacity
+            style={styles.addLine}
+            onPress={() => {
+              schedule[currentDay].push({
+                startTime: new Date(),
+                endTime: new Date(),
+              });
+              setScheduleChanged(!scheduleChanged);
+            }}
+          >
+            <TouchableOpacity>
+              <Feather name="plus-circle" size={24} color="#28D8A1" />
+            </TouchableOpacity>
+            <Text style={styles.addText}> Add another time</Text>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
+
         {/* edit/save button */}
         <View style={styles.buttonView}>
           <TouchableOpacity
             onPress={() => {
               setEditMode(!editMode);
+              saveNewSchedule();
               //schedulePushNotification("Friday");
             }}
             style={editMode ? styles.saveButton : styles.editButton}
@@ -249,5 +282,15 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     height: "100%",
     alignItems: "flex-start",
+  },
+  addText: {
+    color: "#28D8A1",
+    marginLeft: 8,
+    fontWeight: "600",
+  },
+  addLine: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

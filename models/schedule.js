@@ -1,4 +1,5 @@
 import { db } from "../firebase";
+import * as firebase from "firebase";
 
 export async function getSchedule(userId) {
   const schedule = {
@@ -31,4 +32,40 @@ export async function getSchedule(userId) {
   await appendingToSchedule;
 
   return schedule;
+}
+
+export function saveNewScheduleToDB(userId, schedule, currentDay) {
+  // possible solution: remove all user's schedule rows on currentDay
+  // and add new rows
+
+  // deleting doesnt work right now
+
+  // get all rows with matching userId and currentDay
+  //   let scheduleQuery = db
+  //     .collection("schedule")
+  //     .where("userId", "==", userId)
+  //     .where("dayOfWeek", "==", currentDay);
+  //   // delete selected rows
+  //   scheduleQuery.get().then((querySnapshot) => {
+  //     querySnapshot.docs.forEach(function (doc) {
+  //       doc.ref.delete();
+  //     });
+  //   });
+  //   console.log(schedule[currentDay]);
+
+  let batch = db.batch();
+  for (let timeBlock of schedule[currentDay]) {
+    // Create a ref with auto-generated ID
+    var newScheduleRef = db.collection("schedule").doc();
+    batch.set(newScheduleRef, {
+      dayOfWeek: currentDay,
+      startTime: firebase.firestore.Timestamp.fromDate(timeBlock.startTime),
+      endTime: firebase.firestore.Timestamp.fromDate(timeBlock.endTime),
+      userId: userId,
+    });
+  }
+  batch.commit().then(() => {
+    console.log("batch committed");
+  });
+  return;
 }
