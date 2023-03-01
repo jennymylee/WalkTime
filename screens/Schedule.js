@@ -3,135 +3,45 @@ import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
+import { getSchedule } from "../models/schedule";
+import { auth } from "../firebase";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
   const [editMode, setEditMode] = React.useState(false);
+  const [schedule, setSchedule] = React.useState({});
 
   // dummy schedule: {day : [ [startTime, endTime] ]}
-
-  const schedule = {
-    Sunday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Monday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Tuesday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Wednesday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Thursday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Friday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Saturday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-  };
+  React.useEffect(() => {
+    const getUserSchedule = async () => {
+      const sched = await getSchedule(auth.currentUser?.uid);
+      setSchedule(sched);
+    };
+    getUserSchedule();
+  }, []);
 
   function displayScheduleEntries() {
     return (
       <View>
-        {schedule[currentDay].map((e) => {
-          return (
-            <ScheduleEntry
-              startTime={e.startTime.toString()}
-              endTime={e.endTime.toString()}
-              editMode={editMode}
-              setEditMode={setEditMode}
-            />
-          );
-        })}
+        {schedule[currentDay] ? (
+          schedule[currentDay].map((e) => {
+            return (
+              <ScheduleEntry
+                startTime={e.startTime.toString()}
+                endTime={e.endTime.toString()}
+                editMode={editMode}
+                setEditMode={setEditMode}
+              />
+            );
+          })
+        ) : (
+          <></>
+        )}
       </View>
     );
   }
 
-  async function schedulePushNotification(
-    time,
-    day
-  ) {
+  async function schedulePushNotification(time, day) {
     time = new Date(time.getTime() - 5 * 60000);
     var days = [
       "Sunday",
@@ -158,7 +68,7 @@ export default function Schedule() {
         repeats: true,
       },
     });
-    console.log("notif id on scheduling",id)
+    console.log("notif id on scheduling", id);
     return id;
   }
 
@@ -249,10 +159,8 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#fff",
+    backgroundColor: "#28D8A1",
     paddingTop: 50,
-    paddingLeft: 30,
-    paddingRight: 30,
   },
   walkText: {
     fontWeight: "bold",
@@ -309,7 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 30,
     height: "100%",
-    borderRadius: 30,
+    borderRadius: "30",
   },
   currentDayText: {
     fontSize: 25,
