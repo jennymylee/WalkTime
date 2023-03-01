@@ -3,135 +3,59 @@ import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
+import { getSchedule, saveNewScheduleToDB } from "../models/schedule";
+import { auth } from "../firebase";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
   const [editMode, setEditMode] = React.useState(false);
+  const [schedule, setSchedule] = React.useState({});
+  const [scheduleChanged, setScheduleChanged] = React.useState(false);
 
-  // dummy schedule: {day : [ [startTime, endTime] ]}
+  React.useEffect(() => {
+    const getUserSchedule = async () => {
+      const sched = await getSchedule(auth.currentUser?.uid);
+      setSchedule(sched);
+    };
+    getUserSchedule();
+  }, []);
 
-  const schedule = {
-    Sunday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Monday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Tuesday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Wednesday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Thursday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Friday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-    Saturday: [
-      {
-        startTime: new Date("2019-01-01T00:00:00"),
-        endTime: new Date("2019-01-01T01:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T02:00:00"),
-        endTime: new Date("2019-01-01T03:00:00"),
-      },
-      {
-        startTime: new Date("2019-01-01T10:00:00"),
-        endTime: new Date("2019-01-01T21:00:00"),
-      },
-    ],
-  };
+  React.useEffect(() => {
+    displayScheduleEntries();
+  }, [scheduleChanged]);
 
   function displayScheduleEntries() {
     return (
       <View>
-        {schedule[currentDay].map((e) => {
-          return (
-            <ScheduleEntry
-              startTime={e.startTime.toString()}
-              endTime={e.endTime.toString()}
-              editMode={editMode}
-              setEditMode={setEditMode}
-            />
-          );
-        })}
+        {schedule[currentDay] ? (
+          schedule[currentDay].map((e) => {
+            return (
+              <ScheduleEntry
+                startTime={e.startTime.toString()}
+                endTime={e.endTime.toString()}
+                editMode={editMode}
+                setEditMode={setEditMode}
+              />
+            );
+          })
+        ) : (
+          <></>
+        )}
       </View>
     );
   }
 
-  async function schedulePushNotification(
-    time,
-    day
-  ) {
+  // save new edits to schedule on db
+  function saveNewSchedule() {
+    saveNewScheduleToDB(
+      auth.currentUser?.uid,
+      schedule[currentDay],
+      currentDay
+    );
+    return;
+  }
+
+  async function schedulePushNotification(time, day) {
     time = new Date(time.getTime() - 5 * 60000);
     var days = [
       "Sunday",
@@ -158,7 +82,7 @@ export default function Schedule() {
         repeats: true,
       },
     });
-    console.log("notif id on scheduling",id)
+    console.log("notif id on scheduling", id);
     return id;
   }
 
@@ -219,11 +143,36 @@ export default function Schedule() {
         <Text style={styles.currentDayText}>{currentDay}</Text>
         {/* schedule entries */}
         {displayScheduleEntries()}
+        {/* "add another time" text */}
+        {editMode ? (
+          <TouchableOpacity
+            style={styles.addLine}
+            onPress={() => {
+              schedule[currentDay].push({
+                startTime: new Date(),
+                endTime: new Date(),
+              });
+              setScheduleChanged(!scheduleChanged);
+            }}
+          >
+            <TouchableOpacity>
+              <Feather name="plus-circle" size={24} color="#28D8A1" />
+            </TouchableOpacity>
+            <Text style={styles.addText}> Add another time</Text>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
+
         {/* edit/save button */}
         <View style={styles.buttonView}>
           <TouchableOpacity
             onPress={() => {
               setEditMode(!editMode);
+              if (editMode) {
+                saveNewSchedule();
+              }
+
               //schedulePushNotification("Friday");
             }}
             style={editMode ? styles.saveButton : styles.editButton}
@@ -249,10 +198,8 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#fff",
+    backgroundColor: "#28D8A1",
     paddingTop: 50,
-    paddingLeft: 30,
-    paddingRight: 30,
   },
   walkText: {
     fontWeight: "bold",
@@ -309,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 30,
     height: "100%",
-    borderRadius: 30,
+    borderRadius: "30",
   },
   currentDayText: {
     fontSize: 25,
@@ -342,5 +289,15 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     height: "100%",
     alignItems: "flex-start",
+  },
+  addText: {
+    color: "#28D8A1",
+    marginLeft: 8,
+    fontWeight: "600",
+  },
+  addLine: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

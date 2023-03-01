@@ -14,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "walktime-125.appspot.com",
   messagingSenderId: "27807163134",
   appId: "1:27807163134:web:192696828b558d4f053baf",
-  databaseURL: "https://walktime-125.us-east1.firebasedatabase.app"
+  databaseURL: "https://walktime-125.us-east1.firebasedatabase.app",
 };
 
 // Initialize Firebase
@@ -27,73 +27,61 @@ if (firebase.apps.length === 0) {
 
 const auth = firebase.auth();
 const database = firebase.database();
-// const db = getDatabase();
-// const dbRef = firebase.database().ref();
-// const historyRef = ref(db, "history");
-// const scheduleRef = ref(db, "schedule");
+const db = firebase.firestore();
 
-
-// function writeUserData(userId, name, email, imageUrl) {
-//   firebase.database().ref('users/' + userId).set({
-//     username: name,
-//     email: email,
-//     profile_picture : imageUrl
-//   });
-// }
-
-export function addNewHistory(userId, startTime, endTime, date){
-  database.ref('history/').set({
+export function addNewHistory(userId, startTime, endTime, date) {
+  database.ref("history/").set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
-    date: date
-  })
+    date: date,
+  });
 }
 
 export function readHistory(userId) {
-  const historyMap = []
-  var historyRef = database.collection("history")
-  var query = historyRef.where("userId", "==", userId)
+  const historyMap = [];
+  var historyRef = database.collection("history");
+  var query = historyRef
+    .where("userId", "==", userId)
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          // console.log(doc.id, " => ", doc.data());
-          historyMap.push(doc.data());
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data());
+        historyMap.push(doc.data());
       });
-  })
-  .catch((error) => {
+    })
+    .catch((error) => {
       console.log("Error getting documents: ", error);
-  });
+    });
   return historyMap;
-
 }
 
-export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
-  database.ref('schedule/').set({
+export function addNewSchedule(userId, startTime, endTime, dayOfWeek) {
+  database.ref("schedule/").set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
-    dayOfWeek: dayOfWeek
-  })
+    dayOfWeek: dayOfWeek,
+  });
 }
 
 export function readSchedule(userId) {
-  const scheduleMap = []
-  var historyRef = database.collection("schedule")
-  var query = historyRef.where("userId", "==", userId)
+  const scheduleMap = [];
+  var historyRef = database.collection("schedule");
+  var query = historyRef
+    .where("userId", "==", userId)
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          // console.log(doc.id, " => ", doc.data());
-          scheduleMap.push(doc.data());
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data());
+        scheduleMap.push(doc.data());
       });
-  })
-  .catch((error) => {
+    })
+    .catch((error) => {
       console.log("Error getting documents: ", error);
-  });
+    });
   return scheduleMap;
-
 }
-export { auth };
+export { auth, db };
