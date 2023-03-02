@@ -1,37 +1,41 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import HistoryEntry from "../components/HistoryEntry";
+import { auth, readHistory } from "../firebase";
 
 export default function History() {
+  let userId = auth.currentUser?.uid;
+  
   // dummy history log
-  const history = [
-    {
-      date: "Monday, 1/30/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-      ],
-    },
-    {
-      date: "Tuesday, 1/31/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-        { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-      ],
-    },
-    {
-      date: "Wednesday, 2/1/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-        { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-        { startTime: "8:00 PM", distance: 1.2, timeElapsed: 3850 },
-      ],
-    },
-  ];
+  // const history = 
+  // [
+  //   {
+  //     date: "Monday, 1/30/2023",
+  //     data: [
+  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
+  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
+  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
+  //     ],
+  //   },
+  //   {
+  //     date: "Tuesday, 1/31/2023",
+  //     data: [
+  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
+  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
+  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
+  //       { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
+  //     ],
+  //   },
+  //   {
+  //     date: "Wednesday, 2/1/2023",
+  //     data: [
+  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
+  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
+  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
+  //       { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
+  //       { startTime: "8:00 PM", distance: 1.2, timeElapsed: 3850 },
+  //     ],
+  //   },
+  // ];
   return (
     <View style={styles.container}>
       <View style={styles.top}>
