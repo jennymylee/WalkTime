@@ -27,34 +27,15 @@ if (firebase.apps.length === 0) {
 
 const auth = firebase.auth();
 const database = firebase.database();
+const db = firebase.firestore();
 
-// function writeUserData(userId, name, email, imageUrl) {
-//   firebase.database().ref('users/' + userId).set({
-//     username: name,
-//     email: email,
-//     profile_picture : imageUrl
-//   });
-// }
-
-export function addNewHistory(userId, startTime, endTime, date){
-  db.collection("history").add({
+export function addNewHistory(userId, startTime, endTime, date) {
+  database.ref("history/").set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
-    date: date
-  })
-  .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-  })
-  .catch((error) => {
-      console.error("Error adding document: ", error);
+    date: date,
   });
-  // database.ref('history/').set({
-  //   userId: userId,
-  //   startTime: startTime,
-  //   endTime: endTime,
-  //   date: date
-  // })
 }
 
 export function readHistory(userId) {
@@ -76,25 +57,13 @@ export function readHistory(userId) {
   return historyMap;
 }
 
-export function addNewSchedule(userId, startTime, endTime, dayOfWeek){
-  database.collection("schedule").add({
+export function addNewSchedule(userId, startTime, endTime, dayOfWeek) {
+  database.ref("schedule/").set({
     userId: userId,
     startTime: startTime,
     endTime: endTime,
-    dayOfWeek: dayOfWeek
-  })
-  .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-  })
-  .catch((error) => {
-      console.error("Error adding document: ", error);
+    dayOfWeek: dayOfWeek,
   });
-  // database.ref('schedule/').set({
-  //   userId: userId,
-  //   startTime: startTime,
-  //   endTime: endTime,
-  //   dayOfWeek: dayOfWeek
-  // })
 }
 
 export function readSchedule(userId) {

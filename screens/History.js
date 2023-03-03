@@ -1,10 +1,35 @@
+import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import HistoryEntry from "../components/HistoryEntry";
-import { auth, readHistory } from "../firebase";
+import { getHistory, addNewHistory } from "../models/history";
+import { auth } from "../firebase";
 
 export default function History() {
-  let userId = auth.currentUser?.uid;
-  
+  const [rawHistory, setHistory] = React.useState({});
+  React.useEffect(()=> {
+    const getUserHistory = async () => {
+      const hist = await getHistory(auth.currentUser?.uid);
+      setHistory(hist);
+    };
+    getUserHistory();
+  }, []);
+  history = [];
+  // curr data to convert  LOG  history [{"endTime": 2023-02-24T19:19:24.535Z, "startTime": 2023-02-24T19:02:35.043Z, "steps": 4300}]
+  // for (var i = 0; i < rawHistory.length; i++) {
+  //   let  
+  // }
+
+  /*
+  datekey = defaultdict(list)
+  for entry in history:
+    datekey[entry.date].append(entry)
+
+  for item in sorted(datekey.keys()):
+    currDict = {date:item, data:[datekey[item]]}
+    history.append(currDict)
+  */
+
+
   // dummy history log
   // const history = 
   // [
