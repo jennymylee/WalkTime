@@ -1,18 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { PermissionsAndroid, StyleSheet, Text, View, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Pedometer } from "expo-sensors";
+import { requestPermissionsAsync } from "expo-notifications";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
+const requestActivityPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+      {
+        title: 'WalkTime Activity Recognition Permission',
+        message:
+          'WalkTime needs access to your activity recognition.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'NO',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the activity recognition');
+    } else {
+      console.log('Permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 
 export default function Home() {
   var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
   var [currentStepCount, setCurrentStepCount] = useState(0);
   var [isWalking, setWalking] = useState(false);
 
+  requestActivityPermission();
+
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
+    
+    //PermissionsAndroid.check("android.permission.ACTIVITY_RECOGNITION").then(result => {console.log(result);});
 
     if (isAvailable) {
       return Pedometer.watchStepCount(result => {

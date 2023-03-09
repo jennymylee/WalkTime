@@ -11,6 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      "./android-manifest.plugin.js"
+    ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
