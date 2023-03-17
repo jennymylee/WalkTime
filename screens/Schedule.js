@@ -55,8 +55,48 @@ export default function Schedule() {
     return;
   }
 
-  async function schedulePushNotification(time, day) {
-    time = new Date(time.getTime() - 5 * 60000);
+  async function calcPushNotification() {
+    Notifications.cancelAllScheduledNotificationsAsync();
+    var days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    for (let i = 0; i < 7; i++) {
+      let min_time = Infinity;
+      let k = 0;
+      let should_schedule = false;
+      for (let j = 0; j < schedule[days[i]].length; j++) {
+        k = 60*schedule[days[i]][j]["startTime"].getHours() +
+        schedule[days[i]][j]["startTime"].getMinutes();
+
+        do {
+          let min_for_current = Math.min(Math.abs(480-k), Math.abs(960-k));
+
+          if (min_for_current <= min_time) {
+            min_time = k;
+            should_schedule = true;
+          }
+
+          k += 10;
+        } while (k < (60*schedule[days[i]][j]["endTime"].getHours() +
+        schedule[days[i]][j]["endTime"].getMinutes()));
+      }
+
+      if (should_schedule) {
+        schedulePushNotification(days[i], Math.floor(min_time/60), min_time%60);
+      }
+    }
+  }
+
+  async function schedulePushNotification(day, hours, minutes) {
+    console.log("Notif scheduled on ", day, hours, " hours", minutes, " minutes");
+    // time = new Date(time.getTime() - 5 * 60000);
     var days = [
       "Sunday",
       "Monday",
@@ -67,8 +107,8 @@ export default function Schedule() {
       "Saturday",
     ];
     const weekday = days.indexOf(day) + 1;
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
+    // const hours = time.getHours();
+    // const minutes = time.getMinutes();
     const id = await Notifications.scheduleNotificationAsync({
       content: {
         title: "Time for a walk!",
@@ -171,8 +211,8 @@ export default function Schedule() {
               setEditMode(!editMode);
               if (editMode) {
                 saveNewSchedule();
+                calcPushNotification();
               }
-
               //schedulePushNotification("Friday");
             }}
             style={editMode ? styles.saveButton : styles.editButton}
