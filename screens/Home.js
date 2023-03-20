@@ -1,30 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { Pedometer } from "expo-sensors";
+import * as Location from 'expo-location';
+//import { Pedometer } from "expo-sensors";
+//import { requestPermissionsAsync } from "expo-notifications";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
-  var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-  var [currentStepCount, setCurrentStepCount] = useState(0);
-  var [isWalking, setWalking] = useState(false);
-
-  const subscribe = async () => {
-    const isAvailable = await Pedometer.isAvailableAsync();
-    setIsPedometerAvailable(String(isAvailable));
-
-    if (isAvailable) {
-      return Pedometer.watchStepCount(result => {
-        setCurrentStepCount(result.steps);
-      });
-    }
-  };
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [currentStepCount, setCurrentStepCount] = useState(0);
+  const [isWalking, setWalking] = useState(false);
 
   useEffect(() => {
-    const subscription = subscribe();
-    return () => subscription;
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
   }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
 
   let toggleWalk = () => {
     setWalking(!isWalking);
@@ -50,10 +58,7 @@ export default function Home() {
               longitudeDelta: 0.0421,
             }}
           />
-          <Pressable
-            style={styles.walkButton}
-            onPress={toggleWalk}
-          >
+          <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
           </Pressable>
         </View>
@@ -70,12 +75,10 @@ export default function Home() {
         <View style={styles.body}>
           <Text style={styles.bodyText}>Great job on your 11:00am walk!</Text>
           <Text style={styles.bodyText}>Your next walk is at 1:15pm.</Text>
-          <Pressable
-            style={styles.walkButton}
-            onPress={toggleWalk}
-          >
+          <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
+          <Text style={styles.bodyText}>{text}</Text>
         </View>
       </View>
     );
