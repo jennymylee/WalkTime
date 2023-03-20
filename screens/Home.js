@@ -1,129 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { PermissionsAndroid, StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { Pedometer } from "expo-sensors";
-import { requestPermissionsAsync } from "expo-notifications";
+import * as Location from 'expo-location';
+//import { Pedometer } from "expo-sensors";
+//import { requestPermissionsAsync } from "expo-notifications";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
-import GoogleFit, { Scopes } from 'react-native-google-fit'
-
-const requestActivityPermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
-      {
-        title: 'WalkTime Activity Recognition Permission',
-        message:
-          'WalkTime needs access to your activity recognition.',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'NO',
-        buttonPositive: 'OK',
-      },
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can use the activity recognition');
-    } else {
-      console.log('Permission denied');
-    }
-  } catch (err) {
-    console.warn(err);
-  }
-}
-
 export default function Home() {
-  //var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-  var [dailySteps, setdailySteps] = useState(0);
-  var [isWalking, setWalking] = useState(false);
-
-  //requestActivityPermission();
-  /*
-  const subscribe = async () => {
-    const isAvailable = await Pedometer.isAvailableAsync();
-    setIsPedometerAvailable(String(isAvailable));
-    
-    //PermissionsAndroid.check("android.permission.ACTIVITY_RECOGNITION").then(result => {console.log(result);});
-
-    if (isAvailable) {
-      return Pedometer.watchStepCount(result => {
-        setCurrentStepCount(result.steps);
-      });
-    }
-  };
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [currentStepCount, setCurrentStepCount] = useState(0);
+  const [isWalking, setWalking] = useState(false);
 
   useEffect(() => {
-    const subscription = subscribe();
-    return () => subscription;
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
   }, []);
-  */
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
   let toggleWalk = () => {
     setWalking(!isWalking);
   };
-
-  function getStepData() {
-    const options = {
-      scopes: [
-        Scopes.FITNESS_ACTIVITY_READ,
-        Scopes.FITNESS_ACTIVITY_WRITE
-      ],
-    };
-
-    var today = new Date();
-    var lastWeekDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() - 8,
-    );
-    const opt = {
-      startDate: lastWeekDate.toISOString(), // required ISO8601Timestamp
-      endDate: today.toISOString(), // required ISO8601Timestamp
-      bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
-      bucketInterval: 1, // optional - default 1.
-    };
-
-    async function fetchStepData(options) {
-      const res = await GoogleFit.getDailyStepCountSamples(options);
-      if (res.length !== 0) {
-        for (var i = 0; i < res.length; i++) {
-          if (res[i].source === 'com.google.android.gms:estimated_steps') {
-            let data = res[i].steps.reverse();
-            dailyStepCount = res[i].steps;
-            setdailySteps(data[0].value);
-          }
-        }
-      } else {
-        console.log('Not Found');
-      }
-    };
-    
-    GoogleFit.checkIsAuthorized().then(() => {
-      var authorized = GoogleFit.isAuthorized;
-      console.log(authorized);
-      if (authorized) {
-        // if already authorized, fetch data
-        fetchStepData(opt);
-      } else {
-        // Authentication if already not authorized for a particular device
-        GoogleFit.authorize(options)
-          .then(authResult => {
-            if (authResult.success) {
-              console.log('AUTH_SUCCESS');
-
-              // if successfully authorized, fetch data
-            } else {
-              console.log('AUTH_DENIED ' + authResult.message);
-            }
-          })
-          .catch(() => {
-            dispatch('AUTH_ERROR');
-          });
-      }
-    });
-  };
-
-  useEffect(() => {
-    getStepData();
-  }, []);
 
   if(isWalking){
     return (
@@ -134,7 +47,7 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step counter: {dailySteps}</Text>
+          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
           <MapView 
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
@@ -165,7 +78,7 @@ export default function Home() {
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
-          <Text style={styles.bodyText}>Is this authorized? {GoogleFit.isAuthorized}</Text>
+          <Text style={styles.bodyText}>{text}</Text>
         </View>
       </View>
     );

@@ -5,6 +5,7 @@ export default function History() {
   // dummy history log
   const history = [
     {
+      key: 1,
       date: "Monday, 1/30/2023",
       data: [
         { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
@@ -13,6 +14,7 @@ export default function History() {
       ],
     },
     {
+      key: 2,
       date: "Tuesday, 1/31/2023",
       data: [
         { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
@@ -22,6 +24,7 @@ export default function History() {
       ],
     },
     {
+      key: 3,
       date: "Wednesday, 2/1/2023",
       data: [
         { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
@@ -45,7 +48,7 @@ export default function History() {
         style={styles.log}
         data={history}
         renderItem={HistoryEntry}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => { return item.key; }}
       />
     </View>
   );

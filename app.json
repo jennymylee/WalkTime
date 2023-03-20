@@ -12,7 +12,14 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "./android-manifest.plugin.js"
+      "./android-manifest.plugin.js",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow WalkTime to use your location.",
+          "isAndroidBackgroundLocationEnabled": "Allow WalkTime to use your location."
+        }
+      ]
     ],
     "updates": {
       "fallbackToCacheTimeout": 0
