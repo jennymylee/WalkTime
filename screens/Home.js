@@ -5,6 +5,9 @@ import { Pedometer } from "expo-sensors";
 import { requestPermissionsAsync } from "expo-notifications";
 //import { Permissions } from "@expo/config-plugins/build/android";
 //import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
+
+import GoogleFit, { Scopes } from 'react-native-google-fit'
+
 const requestActivityPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -29,12 +32,12 @@ const requestActivityPermission = async () => {
 }
 
 export default function Home() {
-  var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-  var [currentStepCount, setCurrentStepCount] = useState(0);
+  //var [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  var [dailySteps, setdailySteps] = useState(0);
   var [isWalking, setWalking] = useState(false);
 
-  requestActivityPermission();
-
+  //requestActivityPermission();
+  /*
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
@@ -52,10 +55,75 @@ export default function Home() {
     const subscription = subscribe();
     return () => subscription;
   }, []);
-
+  */
   let toggleWalk = () => {
     setWalking(!isWalking);
   };
+
+  function getStepData() {
+    const options = {
+      scopes: [
+        Scopes.FITNESS_ACTIVITY_READ,
+        Scopes.FITNESS_ACTIVITY_WRITE
+      ],
+    };
+
+    var today = new Date();
+    var lastWeekDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 8,
+    );
+    const opt = {
+      startDate: lastWeekDate.toISOString(), // required ISO8601Timestamp
+      endDate: today.toISOString(), // required ISO8601Timestamp
+      bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+      bucketInterval: 1, // optional - default 1.
+    };
+
+    async function fetchStepData(options) {
+      const res = await GoogleFit.getDailyStepCountSamples(options);
+      if (res.length !== 0) {
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].source === 'com.google.android.gms:estimated_steps') {
+            let data = res[i].steps.reverse();
+            dailyStepCount = res[i].steps;
+            setdailySteps(data[0].value);
+          }
+        }
+      } else {
+        console.log('Not Found');
+      }
+    };
+    
+    GoogleFit.checkIsAuthorized().then(() => {
+      var authorized = GoogleFit.isAuthorized;
+      console.log(authorized);
+      if (authorized) {
+        // if already authorized, fetch data
+        fetchStepData(opt);
+      } else {
+        // Authentication if already not authorized for a particular device
+        GoogleFit.authorize(options)
+          .then(authResult => {
+            if (authResult.success) {
+              console.log('AUTH_SUCCESS');
+
+              // if successfully authorized, fetch data
+            } else {
+              console.log('AUTH_DENIED ' + authResult.message);
+            }
+          })
+          .catch(() => {
+            dispatch('AUTH_ERROR');
+          });
+      }
+    });
+  };
+
+  useEffect(() => {
+    getStepData();
+  }, []);
 
   if(isWalking){
     return (
@@ -66,7 +134,7 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <Text style={styles.bodyText}>Step counter: {dailySteps}</Text>
           <MapView 
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
@@ -77,10 +145,7 @@ export default function Home() {
               longitudeDelta: 0.0421,
             }}
           />
-          <Pressable
-            style={styles.walkButton}
-            onPress={toggleWalk}
-          >
+          <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
           </Pressable>
         </View>
@@ -97,12 +162,10 @@ export default function Home() {
         <View style={styles.body}>
           <Text style={styles.bodyText}>Great job on your 11:00am walk!</Text>
           <Text style={styles.bodyText}>Your next walk is at 1:15pm.</Text>
-          <Pressable
-            style={styles.walkButton}
-            onPress={toggleWalk}
-          >
+          <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
+          <Text style={styles.bodyText}>Is this authorized? {GoogleFit.isAuthorized}</Text>
         </View>
       </View>
     );
