@@ -81,7 +81,11 @@ export default function Home() {
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
-          <Text style={styles.bodyText}>{text}</Text>
+          <View style={styles.factContainer}>
+            <Text style={styles.headerText}>Why Walk?</Text>
+            <Text style={styles.bodyText}>Walking is a great way to get the physical activity needed to obtain health benefits. Moderate-to-vigorous physical activity can improve sleep, memory, and the ability to think and learn. It also reduces anxiety symptoms.</Text>
+            <Text>Source: Centers for Disease Control and Prevention, U.S. Department of Health & Human Services</Text>
+          </View>
         </View>
       </View>
     );
@@ -118,13 +122,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 25,
+    fontWeight: "500"
   },
   walkButton: {
     backgroundColor: "#28D8A1",
     padding: 10,
     margin: 10,
     width: "75%",
-    borderRadius: 15, 
+    borderRadius: 30, 
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -132,5 +137,15 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "60%",
+  },
+  factContainer: {
+    backgroundColor: "#B1E8D9",
+    padding: 20,
+    margin: 20, 
+    borderRadius: 20,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold"
   }
 });
