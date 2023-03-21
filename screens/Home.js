@@ -1,30 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-//import { Pedometer } from "expo-sensors";
-//import { requestPermissionsAsync } from "expo-notifications";
-//import { Permissions } from "@expo/config-plugins/build/android";
-//import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
+  const [stepCount, setStepCount] = useState(0);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [currentStepCount, setCurrentStepCount] = useState(0);
   const [isWalking, setWalking] = useState(false);
 
   useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync();
       setLocation(location);
     })();
+    setStepCount(stepCount + 1);
   }, []);
 
   let text = 'Waiting..';
@@ -33,10 +28,17 @@ export default function Home() {
   } else if (location) {
     text = JSON.stringify(location);
   }
-
-  let toggleWalk = () => {
+  
+  function toggleWalk() {
     setWalking(!isWalking);
   };
+
+  // Call updateStepCount in 2 seconds and every 2 seconds after
+  //let updateCountInterval = setInterval(updateStepCount, 2000);
+  //if(!isWalking){
+    // stop running interval if not walking
+    //clearInterval(updateCountInterval);
+  //}
 
   if(isWalking){
     return (
@@ -47,16 +49,17 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <Text style={styles.bodyText}>Step Count: {stepCount}</Text>
           <MapView 
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
             initialRegion={{
-              latitude: 33.645463,
-              longitude: -117.842087,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.01,
             }}
+            showsUserLocation={true}
           />
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
