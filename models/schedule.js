@@ -39,19 +39,35 @@ export function saveNewScheduleToDB(userId, currentDayTimes, currentDay) {
   // and add new rows
 
   // deleting doesnt work right now
-
+  let bat = db.batch();
   // get all rows with matching userId and currentDay
-  //   let scheduleQuery = db
-  //     .collection("schedule")
-  //     .where("userId", "==", userId)
-  //     .where("dayOfWeek", "==", currentDay);
-  //   // delete selected rows
-  //   scheduleQuery.get().then((querySnapshot) => {
-  //     querySnapshot.docs.forEach(function (doc) {
-  //       doc.ref.delete();
-  //     });
+  let scheduleQuery = db
+    .collection("schedule")
+    .where("userId", "==", userId)
+    .where("dayOfWeek", "==", currentDay);
+  // delete selected rows
+
+  scheduleQuery.get().then((querySnapshot) => {
+    querySnapshot.docs.forEach(function (doc) {
+      bat.delete(doc);
+    });
+  });
+
+  bat
+    .commit()
+    .then(() => {
+      console.log("Batch delete successful");
+    })
+    .catch((error) => {
+      console.error("Batch delete error:", error);
+    });
+
+  // scheduleQuery.get().then((querySnapshot) => {
+  //   querySnapshot.docs.forEach(function (doc) {
+  //     doc.ref.delete();
   //   });
-  //   console.log(schedule[currentDay]);
+  // });
+  // console.log(schedule[currentDay]);
 
   let batch = db.batch();
   for (let timeBlock of currentDayTimes) {
@@ -64,8 +80,13 @@ export function saveNewScheduleToDB(userId, currentDayTimes, currentDay) {
       userId: userId,
     });
   }
-  batch.commit().then(() => {
-    console.log("batch committed");
-  });
+  batch
+    .commit()
+    .then(() => {
+      console.log("batch committed");
+    })
+    .catch((error) => {
+      console.error("Batch delete error:", error);
+    });
   return;
 }
