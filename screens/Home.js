@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import * as Location from 'expo-location';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import * as Location from "expo-location";
+import { logWalk } from "../models/history";
+import { auth } from "../firebase";
 
 export default function Home() {
   const [stepCount, setStepCount] = useState(0);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isWalking, setWalking] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         return;
       }
       let location = await Location.getCurrentPositionAsync();
@@ -22,25 +26,32 @@ export default function Home() {
     setStepCount(stepCount + 1);
   }, []);
 
-  let text = 'Waiting..';
+  let text = "Waiting..";
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
   }
-  
+
   function toggleWalk() {
     setWalking(!isWalking);
-  };
+    if (!isWalking) {
+      setStartTime(new Date());
+    } else {
+      setEndTime(new Date());
+
+      logWalk(auth.currentUser?.uid, startTime, endTime, stepCount);
+    }
+  }
 
   // Call updateStepCount in 2 seconds and every 2 seconds after
   //let updateCountInterval = setInterval(updateStepCount, 2000);
   //if(!isWalking){
-    // stop running interval if not walking
-    //clearInterval(updateCountInterval);
+  // stop running interval if not walking
+  //clearInterval(updateCountInterval);
   //}
 
-  if(isWalking){
+  if (isWalking) {
     return (
       <View style={styles.container}>
         <Text style={styles.walkText}>
@@ -50,9 +61,9 @@ export default function Home() {
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
           <Text style={styles.bodyText}>Step Count: {stepCount}</Text>
-          <MapView 
+          <MapView
             style={styles.map}
-            provider={PROVIDER_GOOGLE} 
+            provider={PROVIDER_GOOGLE}
             initialRegion={{
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
@@ -67,8 +78,7 @@ export default function Home() {
         </View>
       </View>
     );
-  }
-  else{
+  } else {
     return (
       <View style={styles.container}>
         <Text style={styles.walkText}>
@@ -83,14 +93,21 @@ export default function Home() {
           </Pressable>
           <View style={styles.factContainer}>
             <Text style={styles.headerText}>Why Walk?</Text>
-            <Text style={styles.bodyText}>Walking is a great way to get the physical activity needed to obtain health benefits. Moderate-to-vigorous physical activity can improve sleep, memory, and the ability to think and learn. It also reduces anxiety symptoms.</Text>
-            <Text>Source: Centers for Disease Control and Prevention, U.S. Department of Health & Human Services</Text>
+            <Text style={styles.bodyText}>
+              Walking is a great way to get the physical activity needed to
+              obtain health benefits. Moderate-to-vigorous physical activity can
+              improve sleep, memory, and the ability to think and learn. It also
+              reduces anxiety symptoms.
+            </Text>
+            <Text>
+              Source: Centers for Disease Control and Prevention, U.S.
+              Department of Health & Human Services
+            </Text>
           </View>
         </View>
       </View>
     );
   }
-  
 }
 
 const styles = StyleSheet.create({
@@ -114,7 +131,7 @@ const styles = StyleSheet.create({
   body: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   bodyText: {
     fontSize: 18,
@@ -122,17 +139,17 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 25,
-    fontWeight: "500"
+    fontWeight: "500",
   },
   walkButton: {
     backgroundColor: "#28D8A1",
     padding: 10,
     margin: 10,
     width: "75%",
-    borderRadius: 30, 
+    borderRadius: 30,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   map: {
     width: "100%",
@@ -141,11 +158,11 @@ const styles = StyleSheet.create({
   factContainer: {
     backgroundColor: "#B1E8D9",
     padding: 20,
-    margin: 20, 
+    margin: 20,
     borderRadius: 20,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });
