@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import { Pedometer } from "expo-sensors";
 import { logWalk } from "../models/history";
 import { auth } from "../firebase";
 
 export default function Home() {
-  const [stepCount, setStepCount] = useState(0);
+  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [currentStepCount, setCurrentStepCount] = useState(0);
+  const [lastWalk, setLastWalk] = useState("last");
+
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isWalking, setWalking] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -23,33 +25,56 @@ export default function Home() {
       let location = await Location.getCurrentPositionAsync();
       setLocation(location);
     })();
-    setStepCount(stepCount + 1);
-  }, []);
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
+    const subscription = subscribe();
+    return () => subscription;
+  },[]);
 
-  function toggleWalk() {
-    setWalking(!isWalking);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  useEffect(() => {
     if (!isWalking) {
       setStartTime(new Date());
     } else {
       setEndTime(new Date());
-
-      logWalk(auth.currentUser?.uid, startTime, endTime, stepCount);
+      let hours = startTime.getHours();
+      let suffix = 'am'
+      if(hours >= 12){
+        suffix = 'pm';
+        if(hours > 12){
+          hours = hours - 12;
+        }
+      }
+      setLastWalk(hours + ':' + startTime.getMinutes());
+      logWalk(auth.currentUser?.uid, startTime, endTime, currentStepCount);
     }
+  }, [isWalking]);
+
+  const subscribe = async () => {
+    const isAvailable = await Pedometer.isAvailableAsync();
+    setIsPedometerAvailable(String(isAvailable));
+
+    if (isAvailable) {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - 1);
+
+      return Pedometer.watchStepCount(result => {
+        setCurrentStepCount(result.steps);
+      });
+    }
+  };
+
+  let text = "Waiting...";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = "location found";
   }
 
-  // Call updateStepCount in 2 seconds and every 2 seconds after
-  //let updateCountInterval = setInterval(updateStepCount, 2000);
-  //if(!isWalking){
-  // stop running interval if not walking
-  //clearInterval(updateCountInterval);
-  //}
+  function toggleWalk() {
+    setWalking(!isWalking);
+  }
 
   if (isWalking) {
     return (
@@ -60,7 +85,7 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step Count: {stepCount}</Text>
+          
           <MapView
             style={styles.map}
             provider={PROVIDER_GOOGLE}
@@ -72,6 +97,8 @@ export default function Home() {
             }}
             showsUserLocation={true}
           />
+          <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
+          <Text>Step Count: {currentStepCount}</Text>
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
           </Pressable>
@@ -86,7 +113,7 @@ export default function Home() {
           <Text style={styles.timeText}>Time</Text>
         </Text>
         <View style={styles.body}>
-          <Text style={styles.bodyText}>Great job on your 11:00am walk!</Text>
+          <Text style={styles.bodyText}>Great job on your {lastWalk} walk!</Text>
           <Text style={styles.bodyText}>Your next walk is at 1:15pm.</Text>
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
@@ -104,6 +131,7 @@ export default function Home() {
               Department of Health & Human Services
             </Text>
           </View>
+          <Text style={styles.bodyText}>{text}</Text>
         </View>
       </View>
     );
