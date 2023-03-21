@@ -28,7 +28,7 @@ export default function SignUp({ navigation }) {
     saveAge();
   };
 
-  const saveName = async (value) => {
+  const saveName = async () => {
     try {
       await AsyncStorage.setItem('name', name);
     } catch (e) {
@@ -36,7 +36,7 @@ export default function SignUp({ navigation }) {
     }
   };
 
-  const saveAge = async (value) => {
+  const saveAge = async () => {
     try {
       await AsyncStorage.setItem('age', age);
     } catch (e) {
