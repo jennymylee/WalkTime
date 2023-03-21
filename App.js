@@ -15,7 +15,7 @@ import SignUp from "./screens/SignUp";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import React, { useState, useEffect, useRef } from "react";
-import {  Platform } from "react-native";
+import { Platform } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const SettingsStack = createStackNavigator();
@@ -61,7 +61,11 @@ function TabsInterface() {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="History" component={History} />
+      <Tab.Screen
+        name="History"
+        component={History}
+        options={{ unmountOnBlur: true }}
+      />
       <Tab.Screen name="Schedule" component={Schedule} />
 
       <Tab.Screen name="Settings" component={SettingsStackScreen} />
@@ -86,20 +90,20 @@ export default function App() {
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => 
+    registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
     );
 
-    notificationListener.current = 
+    notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
       });
 
-    responseListener.current = 
+    responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log(response);
       });
-    
+
     return () => {
       Notifications.removeNotificationSubscription(
         notificationListener.current
@@ -127,7 +131,7 @@ export default function App() {
     } else {
       alert("Must use physical device for Push Notifications");
     }
-  
+
     if (Platform.OS === "android") {
       Notifications.setNotificationChannelAsync("default", {
         name: "default",
@@ -135,11 +139,12 @@ export default function App() {
         vibrationPattern: [0, 250, 250, 250],
         sound: true,
         lightColor: "#FF231F7C",
-        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        lockscreenVisibility:
+          Notifications.AndroidNotificationVisibility.PUBLIC,
         bypassDnd: true,
       });
     }
-  
+
     return token;
   }
 
@@ -160,4 +165,3 @@ export default function App() {
     </>
   );
 }
-

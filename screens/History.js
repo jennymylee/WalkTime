@@ -1,40 +1,30 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import HistoryEntry from "../components/HistoryEntry";
+import { getHistory } from "../models/history";
+import { auth } from "../firebase";
+import React from "react";
 
 export default function History() {
-  // dummy history log
-  const history = [
-    {
-      key: 1,
-      date: "Monday, 1/30/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-      ],
-    },
-    {
-      key: 2,
-      date: "Tuesday, 1/31/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-        { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-      ],
-    },
-    {
-      key: 3,
-      date: "Wednesday, 2/1/2023",
-      data: [
-        { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-        { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-        { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-        { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-        { startTime: "8:00 PM", distance: 1.2, timeElapsed: 3850 },
-      ],
-    },
-  ];
+  const [history, setHistory] = React.useState([]);
+  React.useEffect(() => {
+    const getUserHistory = async () => {
+      const hist = [];
+      const dateMap = await getHistory(auth.currentUser?.uid);
+
+      let i = 1;
+      for (let date in dateMap) {
+        hist.push({
+          key: i,
+          date: date,
+          data: dateMap[date],
+        });
+        i += 1;
+      }
+      setHistory(hist);
+    };
+    getUserHistory();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -48,7 +38,9 @@ export default function History() {
         style={styles.log}
         data={history}
         renderItem={HistoryEntry}
-        keyExtractor={(item, index) => { return item.key; }}
+        keyExtractor={(item, index) => {
+          return item.key;
+        }}
       />
     </View>
   );
