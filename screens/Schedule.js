@@ -20,9 +20,10 @@ export default function Schedule() {
     getUserSchedule();
   }, []);
 
+  // reload schedules on a current day when the tab changes or when schedule is saved
   React.useEffect(() => {
     displayScheduleEntries();
-  }, [scheduleChanged]);
+  }, [scheduleChanged, currentDay]);
 
   function displayScheduleEntries() {
     return (
@@ -72,11 +73,12 @@ export default function Schedule() {
       let k = 0;
       let should_schedule = false;
       for (let j = 0; j < schedule[days[i]].length; j++) {
-        k = 60*schedule[days[i]][j]["startTime"].getHours() +
-        schedule[days[i]][j]["startTime"].getMinutes();
+        k =
+          60 * schedule[days[i]][j]["startTime"].getHours() +
+          schedule[days[i]][j]["startTime"].getMinutes();
 
         do {
-          let min_for_current = Math.min(Math.abs(480-k), Math.abs(960-k));
+          let min_for_current = Math.min(Math.abs(480 - k), Math.abs(960 - k));
 
           if (min_for_current <= min_time) {
             min_time = k;
@@ -84,18 +86,32 @@ export default function Schedule() {
           }
 
           k += 10;
-        } while (k < (60*schedule[days[i]][j]["endTime"].getHours() +
-        schedule[days[i]][j]["endTime"].getMinutes()));
+        } while (
+          k <
+          60 * schedule[days[i]][j]["endTime"].getHours() +
+            schedule[days[i]][j]["endTime"].getMinutes()
+        );
       }
 
       if (should_schedule) {
-        schedulePushNotification(days[i], Math.floor(min_time/60), min_time%60);
+        schedulePushNotification(
+          days[i],
+          Math.floor(min_time / 60),
+          min_time % 60
+        );
       }
     }
   }
 
   async function schedulePushNotification(day, hours, minutes) {
-    console.log("Notif scheduled on ", day, hours, " hours", minutes, " minutes");
+    console.log(
+      "Notif scheduled on ",
+      day,
+      hours,
+      " hours",
+      minutes,
+      " minutes"
+    );
     // time = new Date(time.getTime() - 5 * 60000);
     var days = [
       "Sunday",
