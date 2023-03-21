@@ -2,41 +2,88 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-//import { Pedometer } from "expo-sensors";
-//import { requestPermissionsAsync } from "expo-notifications";
-//import { Permissions } from "@expo/config-plugins/build/android";
-//import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
+  const [startLocation, setStartLocation] = useState(null);
   const [location, setLocation] = useState(null);
+
   const [errorMsg, setErrorMsg] = useState(null);
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [isWalking, setWalking] = useState(false);
+ 
+  /*
+  Location.watchPositionAsync({
+    accuracy: Location.Accuracy.High
+  },
+  location => {
+      console.log('update location!', location.coords.latitude, location.coords.longitude)
+      setLocation(location);
+  });
+  */
+  function toggleWalk() {
+    setWalking(!isWalking);
+  };
 
   useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
+      
+      let startLocation = await Location.getCurrentPositionAsync({});
+      setStartLocation(startLocation);
+  
+      if(isWalking){
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+        // set stepCount
+        var lat1 = location.coords.latitude;
+        var lon1 = location.coords.longitude;
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+        var lat2 = startLocation.coords.latitude;
+        var lon2 = startLocation.coords.longitude;
+
+        let distance = Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*6371; // distance in kilometers
+        distance = distance * 3280.84; // convert to feet
+        let stride = 2.1; // avg stride of 2.1 feet
+        setCurrentStepCount(Math.ceil(distance / stride));
+      }
     })();
   }, []);
 
-  let text = 'Waiting..';
+  let text = 'Waiting for location...';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
   }
 
-  let toggleWalk = () => {
-    setWalking(!isWalking);
-  };
+  async function getStepCount(){
+    if(startLocation != null){
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+
+      var lat1 = location.coords.latitude;
+      var lon1 = location.coords.longitude;
+      var lat2 = startLocation.coords.latitude;
+      var lon2 = startLocation.coords.longitude;
+
+      let distance = Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*6371; // distance in kilometers
+      distance = distance * 3280.84; // convert to feet
+      let stride = 2.1; // avg stride of 2.1 feet
+      setCurrentStepCount(Math.ceil(distance / stride));
+    }
+  }
+
+  // Call getStepCount in one minute and then again every minute after that
+  let updateCountInterval = setInterval(getStepCount, 5000);
+  
+  if(!isWalking){
+    // stop running interval if not walking
+    clearInterval(updateCountInterval);
+  }
 
   if(isWalking){
     return (
@@ -52,11 +99,12 @@ export default function Home() {
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
             initialRegion={{
-              latitude: 33.645463,
-              longitude: -117.842087,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+              latitude: startLocation.coords.latitude,
+              longitude: startLocation.coords.longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.01,
             }}
+            showsUserLocation={true}
           />
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
