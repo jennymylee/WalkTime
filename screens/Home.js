@@ -1,30 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-//import { Pedometer } from "expo-sensors";
-//import { requestPermissionsAsync } from "expo-notifications";
-//import { Permissions } from "@expo/config-plugins/build/android";
-//import { getAndroidManifestAsync } from "@expo/config-plugins/build/android/Paths";
 
 export default function Home() {
+  const [stepCount, setStepCount] = useState(0);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [currentStepCount, setCurrentStepCount] = useState(0);
   const [isWalking, setWalking] = useState(false);
 
   useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync();
       setLocation(location);
     })();
+    setStepCount(stepCount + 1);
   }, []);
 
   let text = 'Waiting..';
@@ -33,10 +28,17 @@ export default function Home() {
   } else if (location) {
     text = JSON.stringify(location);
   }
-
-  let toggleWalk = () => {
+  
+  function toggleWalk() {
     setWalking(!isWalking);
   };
+
+  // Call updateStepCount in 2 seconds and every 2 seconds after
+  //let updateCountInterval = setInterval(updateStepCount, 2000);
+  //if(!isWalking){
+    // stop running interval if not walking
+    //clearInterval(updateCountInterval);
+  //}
 
   if(isWalking){
     return (
@@ -47,16 +49,17 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <Text style={styles.bodyText}>Step Count: {stepCount}</Text>
           <MapView 
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
             initialRegion={{
-              latitude: 33.645463,
-              longitude: -117.842087,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.01,
             }}
+            showsUserLocation={true}
           />
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
@@ -78,7 +81,11 @@ export default function Home() {
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
-          <Text style={styles.bodyText}>{text}</Text>
+          <View style={styles.factContainer}>
+            <Text style={styles.headerText}>Why Walk?</Text>
+            <Text style={styles.bodyText}>Walking is a great way to get the physical activity needed to obtain health benefits. Moderate-to-vigorous physical activity can improve sleep, memory, and the ability to think and learn. It also reduces anxiety symptoms.</Text>
+            <Text>Source: Centers for Disease Control and Prevention, U.S. Department of Health & Human Services</Text>
+          </View>
         </View>
       </View>
     );
@@ -115,13 +122,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 25,
+    fontWeight: "500"
   },
   walkButton: {
     backgroundColor: "#28D8A1",
     padding: 10,
     margin: 10,
     width: "75%",
-    borderRadius: 15, 
+    borderRadius: 30, 
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -129,5 +137,15 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "60%",
+  },
+  factContainer: {
+    backgroundColor: "#B1E8D9",
+    padding: 20,
+    margin: 20, 
+    borderRadius: 20,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold"
   }
 });
