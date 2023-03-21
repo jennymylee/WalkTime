@@ -1,29 +1,26 @@
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 import { auth } from "../firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Profile({ navigation }) {
-  const getName = async () => {
-    try {
-      await AsyncStorage.getItem('name').then((value) => {
-        return value == null ? value : " ";
-      });
-    } catch(e) {
-      // error reading value
-    }
-  }
-  const getAge = async () => {
-    try {
-      await AsyncStorage.getItem('age').then((value) => {
-        return value == null ? value : 0;
-      });
-    } catch(e) {
-      // error reading value
-    }
-  }
+  const [name, setName] = useState(" ");
+  const [age, setAge] = useState(0);
 
-  let name = "John";
-  let age = 23;
+  useEffect(() => {
+      try {
+        AsyncStorage.getItem('name').then((result) => {
+          setName(result);
+        });
+        
+        AsyncStorage.getItem('age').then((result) => {
+          setAge(result);
+        });
+      } catch(e) {
+        console.log(e);
+      }
+  }, []);
+
 
   return (
     <View style={styles.container}>

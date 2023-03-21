@@ -24,25 +24,20 @@ export default function SignUp({ navigation }) {
         console.log("registered with:", user.email);
       })
       .catch((error) => alert(error.message));
-    saveName();
-    saveAge();
+    saveNameAndAge();
   };
 
-  const saveName = async () => {
+  const saveNameAndAge = async () => {
     try {
       await AsyncStorage.setItem('name', name);
+      await AsyncStorage.setItem('age', age);
+      console.log("name: " + name);
+      console.log("age: " + age);
     } catch (e) {
-      // saving error
+      console.log(e);
     }
   };
 
-  const saveAge = async () => {
-    try {
-      await AsyncStorage.setItem('age', age);
-    } catch (e) {
-      // saving error
-    }
-  };
 
   return (
     <View style={styles.container}>
