@@ -8,6 +8,7 @@ import {
   Button,
 } from "react-native";
 import { auth } from "../firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUp({ navigation }) {
   const [email, setEmail] = React.useState("");
@@ -23,6 +24,24 @@ export default function SignUp({ navigation }) {
         console.log("registered with:", user.email);
       })
       .catch((error) => alert(error.message));
+    saveName();
+    saveAge();
+  };
+
+  const saveName = async (value) => {
+    try {
+      await AsyncStorage.setItem('name', name);
+    } catch (e) {
+      // saving error
+    }
+  };
+
+  const saveAge = async (value) => {
+    try {
+      await AsyncStorage.setItem('age', age);
+    } catch (e) {
+      // saving error
+    }
   };
 
   return (
