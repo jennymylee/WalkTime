@@ -2,8 +2,8 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 const HistoryEntry = ({ item }) => {
-  const SubEntry = ({ startTime, distance, timeElapsed }) => {
-    // converts seconds to houra minutes seconds string
+  const SubEntry = ({ startTime, stepCount, timeElapsed }) => {
+    // converts seconds to hours minutes seconds string
     const hours = Math.floor(timeElapsed / 3600);
     timeElapsed %= 3600;
     const minutes = Math.floor(timeElapsed / 60);
@@ -19,7 +19,7 @@ const HistoryEntry = ({ item }) => {
       <View style={styles.subEntry}>
         <Text style={styles.startTime}>{startTime}</Text>
         <View style={styles.data}>
-          <Text style={styles.dataText}>{distance} miles</Text>
+          <Text style={styles.dataText}>{stepCount} steps</Text>
           <Text style={styles.dataText}>{timeElapsedStr}</Text>
         </View>
       </View>
@@ -33,7 +33,7 @@ const HistoryEntry = ({ item }) => {
           return (
             <SubEntry
               startTime={walk.startTime}
-              distance={walk.distance}
+              stepCount={walk.stepCount}
               timeElapsed={walk.timeElapsed}
             />
           );

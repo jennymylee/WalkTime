@@ -1,66 +1,30 @@
 import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import HistoryEntry from "../components/HistoryEntry";
-import { getHistory, addNewHistory } from "../models/history";
+import { getHistory } from "../models/history";
 import { auth } from "../firebase";
+import React from "react";
 
 export default function History() {
-  const [rawHistory, setHistory] = React.useState({});
-  React.useEffect(()=> {
+  const [history, setHistory] = React.useState([]);
+  React.useEffect(() => {
     const getUserHistory = async () => {
-      const hist = await getHistory(auth.currentUser?.uid);
+      const hist = [];
+      const dateMap = await getHistory(auth.currentUser?.uid);
+
+      let i = 1;
+      for (let date in dateMap) {
+        hist.push({
+          key: i,
+          date: date,
+          data: dateMap[date],
+        });
+        i += 1;
+      }
       setHistory(hist);
     };
     getUserHistory();
   }, []);
-  history = [];
-  // curr data to convert  LOG  history [{"endTime": 2023-02-24T19:19:24.535Z, "startTime": 2023-02-24T19:02:35.043Z, "steps": 4300}]
-  // for (var i = 0; i < rawHistory.length; i++) {
-  //   let  
-  // }
-
-  /*
-  datekey = defaultdict(list)
-  for entry in history:
-    datekey[entry.date].append(entry)
-
-  for item in sorted(datekey.keys()):
-    currDict = {date:item, data:[datekey[item]]}
-    history.append(currDict)
-  */
-
-
-  // dummy history log
-  // const history = 
-  // [
-  //   {
-  //     date: "Monday, 1/30/2023",
-  //     data: [
-  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-  //     ],
-  //   },
-  //   {
-  //     date: "Tuesday, 1/31/2023",
-  //     data: [
-  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-  //       { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-  //     ],
-  //   },
-  //   {
-  //     date: "Wednesday, 2/1/2023",
-  //     data: [
-  //       { startTime: "12:56 PM", distance: 1.34, timeElapsed: 3400 },
-  //       { startTime: "3:00 PM", distance: 2.03, timeElapsed: 3600 },
-  //       { startTime: "5:00 PM", distance: 0.8, timeElapsed: 3500 },
-  //       { startTime: "8:00 PM", distance: 0.98, timeElapsed: 3550 },
-  //       { startTime: "8:00 PM", distance: 1.2, timeElapsed: 3850 },
-  //     ],
-  //   },
-  // ];
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -74,7 +38,9 @@ export default function History() {
         style={styles.log}
         data={history}
         renderItem={HistoryEntry}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => {
+          return item.key;
+        }}
       />
     </View>
   );
