@@ -1,28 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function Home() {
-  const [startLocation, setStartLocation] = useState(null);
+  const [stepCount, setStepCount] = useState(0);
   const [location, setLocation] = useState(null);
-
   const [errorMsg, setErrorMsg] = useState(null);
-  const [currentStepCount, setCurrentStepCount] = useState(0);
   const [isWalking, setWalking] = useState(false);
- 
-  /*
-  Location.watchPositionAsync({
-    accuracy: Location.Accuracy.High
-  },
-  location => {
-      console.log('update location!', location.coords.latitude, location.coords.longitude)
-      setLocation(location);
-  });
-  */
-  function toggleWalk() {
-    setWalking(!isWalking);
-  };
 
   useEffect(() => {
     (async () => {
@@ -31,59 +16,29 @@ export default function Home() {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-      
-      let startLocation = await Location.getCurrentPositionAsync({});
-      setStartLocation(startLocation);
-  
-      if(isWalking){
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-        // set stepCount
-        var lat1 = location.coords.latitude;
-        var lon1 = location.coords.longitude;
-
-        var lat2 = startLocation.coords.latitude;
-        var lon2 = startLocation.coords.longitude;
-
-        let distance = Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*6371; // distance in kilometers
-        distance = distance * 3280.84; // convert to feet
-        let stride = 2.1; // avg stride of 2.1 feet
-        setCurrentStepCount(Math.ceil(distance / stride));
-      }
+      let location = await Location.getCurrentPositionAsync();
+      setLocation(location);
     })();
+    setStepCount(stepCount + 1);
   }, []);
 
-  let text = 'Waiting for location...';
+  let text = 'Waiting..';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
   }
-
-  async function getStepCount(){
-    if(startLocation != null){
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-
-      var lat1 = location.coords.latitude;
-      var lon1 = location.coords.longitude;
-      var lat2 = startLocation.coords.latitude;
-      var lon2 = startLocation.coords.longitude;
-
-      let distance = Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*6371; // distance in kilometers
-      distance = distance * 3280.84; // convert to feet
-      let stride = 2.1; // avg stride of 2.1 feet
-      setCurrentStepCount(Math.ceil(distance / stride));
-    }
-  }
-
-  // Call getStepCount in one minute and then again every minute after that
-  let updateCountInterval = setInterval(getStepCount, 5000);
   
-  if(!isWalking){
+  function toggleWalk() {
+    setWalking(!isWalking);
+  };
+
+  // Call updateStepCount in 2 seconds and every 2 seconds after
+  //let updateCountInterval = setInterval(updateStepCount, 2000);
+  //if(!isWalking){
     // stop running interval if not walking
-    clearInterval(updateCountInterval);
-  }
+    //clearInterval(updateCountInterval);
+  //}
 
   if(isWalking){
     return (
@@ -94,13 +49,13 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          <Text style={styles.bodyText}>Step counter: {currentStepCount}</Text>
+          <Text style={styles.bodyText}>Step Count: {stepCount}</Text>
           <MapView 
             style={styles.map}
             provider={PROVIDER_GOOGLE} 
             initialRegion={{
-              latitude: startLocation.coords.latitude,
-              longitude: startLocation.coords.longitude,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
               latitudeDelta: 0.02,
               longitudeDelta: 0.01,
             }}
