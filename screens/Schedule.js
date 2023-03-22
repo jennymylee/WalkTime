@@ -5,6 +5,7 @@ import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
 import { getSchedule, saveNewScheduleToDB } from "../models/schedule";
 import { auth } from "../firebase";
+import { getWeatherData } from "../models/weather-request";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
@@ -68,7 +69,10 @@ export default function Schedule() {
       "Saturday",
     ];
 
+    let precipMap = getWeatherData(); // weather
+
     for (let i = 0; i < 7; i++) {
+      let hourMap = precipMap.get(days[i]); // weather
       let min_time = Infinity;
       let k = 0;
       let should_schedule = false;
@@ -81,8 +85,13 @@ export default function Schedule() {
           let min_for_current = Math.min(Math.abs(480 - k), Math.abs(960 - k));
 
           if (min_for_current <= min_time) {
-            min_time = k;
-            should_schedule = true;
+            curr_hr = Math.floor(k/60);
+            precip_chance = hourMap.get(curr_hr);
+            if (precip_chance < 50) {
+              min_time = k;
+              should_schedule = true;
+            }
+
           }
 
           k += 10;
