@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { auth } from "../firebase";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Profile({ navigation }) {
@@ -21,7 +22,6 @@ export default function Profile({ navigation }) {
       }
   }, []);
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.walkText}>
@@ -29,9 +29,9 @@ export default function Profile({ navigation }) {
         <Text style={styles.profileText}>Profile</Text>
       </Text>
       <View style={styles.body}>
-        <View style={styles.field}>
-          <Text style={styles.fieldTitle}>Hi, </Text>
-          <Text style={styles.fieldText}>{name}!</Text>
+        <View style={styles.centerContainer}>
+          <Ionicons name="person-circle-outline" size={75}></Ionicons>
+          <Text style={styles.bodyText}>Hi, {name}!</Text>
         </View>
         <View style={styles.field}>
           <Text style={styles.fieldTitle}>Age: </Text>
@@ -71,6 +71,30 @@ const styles = StyleSheet.create({
   body: {
     display: "flex",
     flexDirection: "column",
+  },
+  centerContainer:{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "500",
+  },
+  button: {
+    backgroundColor: "#28D8A1",
+    padding: 10,
+    paddingLeft: 15,
+    margin: 10,
+    width: "50%",
+    borderRadius: 30, 
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  bodyText: {
+    fontSize: 18,
+    marginBottom: 5,
   },
   field:{
     display: "flex",
