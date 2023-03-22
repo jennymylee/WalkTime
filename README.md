@@ -12,3 +12,11 @@ Our project, WalkTime, will remedy long periods of inactivity by sending student
 
 - Expo + React Native
 - Firebase (authorization, database)
+
+## How to Run/Demo WalkTime
+
+- Install the [Expo Go](https://expo.dev/client) application on your mobile phone.
+- From the project directory on your computer, run **npm start** in the terminal.
+- Make sure your computer and mobile phone are on the same Wi-Fi network.
+- Open Expo Go on your phone and connect by entering the URL manually or scanning the QR code in your terminal.
+- This should allow you to run WalkTime from your mobile device!
