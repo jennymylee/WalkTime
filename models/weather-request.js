@@ -9,6 +9,9 @@ async function getWeatherData() {
     // return data;
     x = data;
     console.log("x inside ", x)
+    return x;
+  }).catch((error) => {
+    console.log(error);
   });
   await prom;
   console.log("x outside ", x);
