@@ -45,7 +45,7 @@ export default function Home() {
           hours = hours - 12;
         }
       }
-      setLastWalk(hours + ':' + startTime.getMinutes());
+      setLastWalk(hours + ':' + startTime.getMinutes() + suffix);
       logWalk(auth.currentUser?.uid, startTime, endTime, currentStepCount);
     }
   }, [isWalking]);
@@ -85,7 +85,7 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>On a walk!</Text>
-          
+          <Text style={styles.bodyText}>Step Count: {currentStepCount}</Text>
           <MapView
             style={styles.map}
             provider={PROVIDER_GOOGLE}
@@ -97,8 +97,6 @@ export default function Home() {
             }}
             showsUserLocation={true}
           />
-          <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
-          <Text>Step Count: {currentStepCount}</Text>
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Stop Walk</Text>
           </Pressable>
@@ -114,7 +112,6 @@ export default function Home() {
         </Text>
         <View style={styles.body}>
           <Text style={styles.bodyText}>Great job on your {lastWalk} walk!</Text>
-          <Text style={styles.bodyText}>Your next walk is at 1:15pm.</Text>
           <Pressable style={styles.walkButton} onPress={toggleWalk}>
             <Text style={styles.buttonText}>Start Walk</Text>
           </Pressable>
