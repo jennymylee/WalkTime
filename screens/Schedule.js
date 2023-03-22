@@ -5,7 +5,7 @@ import ScheduleEntry from "../components/ScheduleEntry";
 import * as Notifications from "expo-notifications";
 import { getSchedule, saveNewScheduleToDB } from "../models/schedule";
 import { auth } from "../firebase";
-import { getPrecipMap } from "../models/weather-request";
+import { getWeatherData } from "../models/weather-request";
 
 export default function Schedule() {
   const [currentDay, setCurrentDay] = React.useState("Sunday");
@@ -69,7 +69,7 @@ export default function Schedule() {
       "Saturday",
     ];
 
-    let precipMap = getPrecipMap(); // weather
+    let precipMap = await getWeatherData(); // weather
 
     for (let i = 0; i < 7; i++) {
       let hourMap = precipMap.get(days[i]); // weather
