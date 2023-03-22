@@ -2,12 +2,10 @@
 
 let query = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/92617/next7days?unitGroup=metric&include=hours%2Cdays&key=EGRFGFSQE76XHFF8D5RNLSRFJ&contentType=json'
 async function getWeatherData() {
-  const response = await fetch(query);
+  //const response = await fetch(query);
   // const data = await response.json();
-
   let x = null;
-
-  let prom = response.json().then((data) => {
+  let prom = fetch(query).json().then((data) => {
     // return data;
     x = data;
   });
