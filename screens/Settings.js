@@ -45,19 +45,25 @@ export default function Settings({ navigation }) {
       <View style={styles.section}>
           <Text style={styles.headerText}>Preferences</Text>
           <View style={styles.listItem}>
-            <Ionicons name="globe-outline" size={30}></Ionicons>
-            <Text style={styles.listItemTitle}>Language</Text>
-            <Text style={styles.listItemText}>English</Text>
-            <Ionicons name="chevron-forward-outline" size={30}></Ionicons>
+            <View style={styles.group}>
+              <Ionicons name="globe-outline" size={30}></Ionicons>
+              <Text style={styles.listItemTitle}>Language</Text>
+            </View>
+            <View style={styles.group}>
+              <Text style={styles.listItemText}>English</Text>
+              <Ionicons name="chevron-forward-outline" size={30}></Ionicons>
+            </View>
           </View>
           <View style={styles.listItem}>
-            <Ionicons name="moon-outline" size={30}></Ionicons>
-            <Text style={styles.listItemTitle}>Dark Mode</Text>
-            <Ionicons style={{marginLeft: 115}} name="toggle-sharp" size={45}></Ionicons>
+            <View style={styles.group}>
+              <Ionicons name="moon-outline" size={30}></Ionicons>
+              <Text style={styles.listItemTitle}>Dark Mode</Text>
+            </View>
+            <Ionicons name="toggle-sharp" size={45}></Ionicons>
           </View>
       </View>
 
-      <View style={{height: 250}}>
+      <View style={{height: 100}}>
       </View>
 
       <View style={styles.centerContainer}>
@@ -129,6 +135,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     padding: 5,
     borderColor: "lightgray",
     borderWidth: 1,
@@ -137,11 +144,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     padding: 5,
-    marginRight: 80
   },
   listItemText: {
     fontSize: 16,
     padding: 5,
-    marginLeft: 80
+  },
+  group: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between"
   }
 });
