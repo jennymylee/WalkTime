@@ -8,8 +8,10 @@ async function getWeatherData() {
   let prom = fetch(query).json().then((data) => {
     // return data;
     x = data;
+    console.log("x inside ", x)
   });
   await prom;
+  console.log("x outside ", x);
   return x;
   // return data;
   }
