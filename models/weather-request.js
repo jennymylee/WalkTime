@@ -3,8 +3,11 @@
 let query = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/92617/next7days?unitGroup=metric&include=hours%2Cdays&key=EGRFGFSQE76XHFF8D5RNLSRFJ&contentType=json'
 async function getWeatherData() {
   const response = await fetch(query);
-  const data = await response.json();
-  return data;
+  //const data = await response.json();
+  response.json().then((data) => {
+    return data;
+  })
+  // return data;
   }
 
 export function getPrecipMap() {
